@@ -5,16 +5,16 @@ uvicorn main:app --host 0.0.0.0 --port 8080
 ```
 
 ```bash
-git remote add tpcg https://source.developers.google.com/p/tpcg-datacollector/r/ark-ai-assistant
-git remote add git-ark https://github.com/seongjungkim/ark-assistant-ui
+git remote add tpcg https://source.developers.google.com/p/tpcg-datacollector/r/rubicon-dummy
+git remote add git-ark https://github.com/seongjungkim/rubicon-dummy
 ```
 
 ```bash
 git remote -v                                        
-git-ark https://github.com/seongjungkim/ark-assistant-ui (fetch)
-git-ark https://github.com/seongjungkim/ark-assistant-ui (push)
-tpcg    https://source.developers.google.com/p/tpcg-datacollector/r/ark-ai-assistant (fetch)
-tpcg    https://source.developers.google.com/p/tpcg-datacollector/r/ark-ai-assistant (push)
+git-ark https://github.com/seongjungkim/rubicon-dummy (fetch)
+git-ark https://github.com/seongjungkim/rubicon-dummy (push)
+tpcg    https://source.developers.google.com/p/tpcg-datacollector/r/rubicon-dummy (fetch)
+tpcg    https://source.developers.google.com/p/tpcg-datacollector/r/rubicon-dummy (push)
 ```
 
 ```bash
