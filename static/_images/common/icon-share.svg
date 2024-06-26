@@ -1,0 +1,36 @@
+<svg id="icon-26-Share" xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26">
+  <defs>
+    <style>
+      .cls-1, .cls-2 {
+        fill: none;
+      }
+
+      .cls-1 {
+        stroke: #000;
+        stroke-miterlimit: 10;
+        stroke-width: 2px;
+      }
+
+      .cls-3 {
+        stroke: none;
+      }
+    </style>
+  </defs>
+  <g id="그룹_308" data-name="그룹 308" transform="translate(-229.234 -142.912)">
+    <g id="타원_68" data-name="타원 68" class="cls-1" transform="translate(231.124 152)">
+      <circle class="cls-3" cx="4" cy="4" r="4"/>
+      <circle class="cls-2" cx="4" cy="4" r="3"/>
+    </g>
+    <g id="타원_69" data-name="타원 69" class="cls-1" transform="translate(244.277 144)">
+      <circle class="cls-3" cx="4" cy="4" r="4"/>
+      <circle class="cls-2" cx="4" cy="4" r="3"/>
+    </g>
+    <g id="타원_70" data-name="타원 70" class="cls-1" transform="translate(244.277 160)">
+      <circle class="cls-3" cx="4" cy="4" r="4"/>
+      <circle class="cls-2" cx="4" cy="4" r="3"/>
+    </g>
+    <line id="선_65" data-name="선 65" class="cls-1" y1="5.116" x2="8.411" transform="translate(237.713 149.31)"/>
+    <line id="선_66" data-name="선 66" class="cls-1" x1="8.411" y1="5.116" transform="translate(237.713 157.442)"/>
+  </g>
+  <rect id="사각형_191" data-name="사각형 191" class="cls-2" width="26" height="26"/>
+</svg>
