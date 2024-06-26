@@ -2,7 +2,7 @@
 
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from routers import auth, apis, views, smartphones, display, goods, xhr, pf
+from routers import auth, apis, views, smartphones, display, goods, xhr, cxhr, pf
 
 app = FastAPI()
 
@@ -16,6 +16,7 @@ app.include_router(display.router)
 app.include_router(goods.router)
 app.include_router(pf.router)
 app.include_router(xhr.router)
+app.include_router(cxhr.router)
 
 @app.get("/")
 async def home():

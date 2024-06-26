@@ -4,6 +4,8 @@ from fastapi.templating import Jinja2Templates
 from fastapi.encoders import jsonable_encoder
 from core import schemas
 
+import routers.dummy as dummy
+
 router = APIRouter(
     prefix="/sec/xhr",
     tags=['xhr'],
@@ -11,6 +13,16 @@ router = APIRouter(
 )
 
 templates = Jinja2Templates(directory="templates/details")
+
+#req: schemas.GoodsListRequest = Depends()
+@router.post("/pf/personalization", response_class=JSONResponse)
+async def personalization(request: Request):
+    print('/sec/xhr/pf/personalization')
+    #print(req)
+    
+    response = dummy.personalization_json
+
+    return JSONResponse(content=jsonable_encoder(response))
 
 @router.post("/member/getLoginFlag", response_class=JSONResponse)
 async def get_login_flag(request: Request):

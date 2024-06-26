@@ -31,60 +31,14 @@ async def init(request: Request):
     response = templates.TemplateResponse("all-smartphones.html", template_data)
     return response
 
-@router.get("/galaxy-s24-ultra-s928/SM-S928NZTNKOO/", response_class=HTMLResponse)
-async def init(request: Request):
+@router.get("/{model_name}/{model_no}/", response_class=HTMLResponse)
+async def init(request: Request, model_name: str, model_no: str):
+    print("model_name:", model_name, "model_no:", model_no)
     template_data = {
-        "request": request, "basicCard": None, 
-        "contextPath": "/resource",
-        "corpCd": "VertexAI",
-        "locale": "ko_KR",
-        "activeProfile": "remote",
-        "genAi": "Yes"
+        "request": request
     }
 
-    response = templates.TemplateResponse("SM-S928NZTNKOO.html", template_data)
-    return response
-
-@router.get("/galaxy-s24-ultra-s928-cpo/SM-S928NLBNKOO/", response_class=HTMLResponse)
-async def init(request: Request):
-    template_data = {
-        "request": request, "basicCard": None, 
-        "contextPath": "/resource",
-        "corpCd": "VertexAI",
-        "locale": "ko_KR",
-        "activeProfile": "remote",
-        "genAi": "Yes"
-    }
-
-    response = templates.TemplateResponse("SM-S928NLBNKOO.html", template_data)
-    return response
-
-@router.get("/galaxy-s24-ultra-s928-cpo/SM-S928NLBNKOO/", response_class=HTMLResponse)
-async def init(request: Request):
-    template_data = {
-        "request": request, "basicCard": None, 
-        "contextPath": "/resource",
-        "corpCd": "VertexAI",
-        "locale": "ko_KR",
-        "activeProfile": "remote",
-        "genAi": "Yes"
-    }
-
-    response = templates.TemplateResponse("SM-S928NLBNKOO.html", template_data)
-    return response
-
-@router.get("/galaxy-s24-plus-s926/SM-S926NZVEKOO/", response_class=HTMLResponse)
-async def init(request: Request):
-    template_data = {
-        "request": request, "basicCard": None, 
-        "contextPath": "/resource",
-        "corpCd": "VertexAI",
-        "locale": "ko_KR",
-        "activeProfile": "remote",
-        "genAi": "Yes"
-    }
-
-    response = templates.TemplateResponse("SM-S926NZVEKOO.html", template_data)
+    response = templates.TemplateResponse(f"{model_no}.html", template_data)
     return response
 
 @router.post("/query", response_class=JSONResponse)

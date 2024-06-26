@@ -5,6 +5,7 @@ from fastapi.encoders import jsonable_encoder
 from core import schemas
 
 import routers.goods_list as goodsList
+import routers.dummy as dummy
 
 router = APIRouter(
     prefix="/sec/pf",
