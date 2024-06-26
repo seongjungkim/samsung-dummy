@@ -1,0 +1,1512 @@
+<script>
+    // slide Toggle
+    function slideToggle2(e){
+        var $e = $(e);
+        if($e.length == 0){
+            return false;
+        }
+        $e.click(function(){
+			/* 20200807 스크립트 수정 */
+			if ($(this).hasClass("open")) {
+				$(this).removeClass("open");
+			} else {
+				$(this).parents('.review-list').find("a.txt-slide").removeClass('open');
+				$(this).addClass("open");
+			}
+			/* 20200807 스크립트 수정 */
+        });
+    }
+	
+	$(document).ready(function(){
+		// 전체 상품평 개수 초기화
+		$(".review-total-count > strong").html('377');
+		
+		slideToggle2('.review-text a.txt-slide');
+		
+		$('.review-util>.btn-sns-link, .btn-tooltop02', goodsComment.vWrapId).on('click', function (){
+			var $tooltip = $(this).data();
+			if ($(this).hasClass("btn-tooltop02")){
+				$tooltip.content = $(".btn-tooltop02").siblings(".tooltip-content").html();
+			}else $tooltip.content = $(this).siblings(".tooltip-content").html();
+			
+			var $divTooltip = $(".pd-tooltip");
+			$divTooltip.html($("#tooltipTempl").render($tooltip));
+			if ($(this).hasClass("btn-sns-link")){
+				// 외부공유링크
+				$divTooltip.find('a').off().on('click', function (){
+					if ($(this).hasClass('pd-sns-facebook')){ 
+						// 페이스북 링크
+						//goodsComment.fnShareFacebook();
+						/* window.open("","fbSharePop", "resizable=no width=526 height=158");
+						$("#facebookShareForm").attr({"action":"/sec/xhr/goods/facebookShareMeta", "method":"post"}).submit(); */
+					}else if ($(this).hasClass('pd-sns-instagram')){
+						//인스타그램
+						window.open('https://www.instagram.com', 'instagramPopup', 'resizable=no width=480 height=720');
+						//
+					}
+				});
+			}
+			if(!$("body").children().is("#mask")){
+				$("body").append("<div id='mask' style=''></div>");
+			}
+			$("#mask").css('z-index', 14).fadeIn();
+			$("#mask").css('background','rgba(0,0,0,0.0)');
+			$('#mask').off().on('click', function (){ 
+				$divTooltip.hide();
+				$("body").css("overflow","");
+				$("#mask").fadeOut("fast").remove();
+				$(this).off();
+			});
+			tooltipCenterTop(this, 'pd-tooltip', 380);
+
+			// Dropdown Menu
+			$(".dropdownMenu>.choose-account", goodsComment.vWrapId).off().on("click", function(e){
+				e.preventDefault();
+				var $ul = $(this).siblings('ul');
+				$(".dropdownMenu ul", goodsComment.vWrapId).not($ul).css("z-index", 2);
+				$ul.css("z-index", 3);
+				
+				var docHeight = $(document).innerHeight();
+		        if ($(this).parent().hasClass("active")){
+		            $(this).parent().removeClass("active").removeClass("bottom");
+		            $(this).focus();
+		        } else {
+		            $(this).parent().addClass("active");
+		            if(docHeight < ($(this).next().outerHeight() + $(this).next().offset().top)){
+		                $(this).parent().addClass("bottom");
+		            }
+		            $(this).siblings().find("input[type='radio']").eq(0).focus();
+		        }
+		    });
+		});
+
+		$(document).off('click', '.btn-tooltip-close').on('click', '.btn-tooltip-close', function(){
+			$("#mask").trigger('click');
+		});
+		
+		$(".review-util", goodsComment.vWrapId).on('click', 'button[name=delComment]', function(){
+			var goodsEstmNo = $(this).val();
+			var confirmData = {
+				content : "상품평을 삭제 하시겠습니까?"
+			    ,okBtnText : "확인"
+			    ,cancelBtnText : "취소"
+			};
+			commonConfirm(confirmData);
+			openLayer('commonConfirm');
+			
+			$("#closeCommonConfirmBtn").hide();
+			
+			$("#commonConfirmOkBtn").on('click' , function(){
+				var options = {
+					url : "/sec/xhr/goods/deleteGoodsAdvancedComment"
+					, data : {
+						goodsEstmNo : goodsEstmNo
+					}
+					, done: function (data) {
+						location.reload(true);
+					}
+				}
+				ajax.call(options);
+			});
+			
+			$("#commonConfirmCancelBtn").on('click' , function(){
+				return false;
+			});
+		});
+		
+		$(".review-util", goodsComment.vWrapId).on('click', 'button[name=updatelComment]', function(){
+			var goodsEstmNo = $(this).val();
+			goodsMain.fnLoginCheck(function(isLogin){
+				if(!isLogin){
+					var $msgData = {
+						content :"로그인 이후 상품평 작성 가능합니다.<br/>로그인 화면으로 이동하시겠습니까?"
+						, yes : "확인"
+						, yescls : "login-view-write"
+						, no : "취소"
+						, close : "툴팁 닫기"
+					}
+					goodsComment.fnMsgPop($msgData);
+					return false;
+				}
+				
+				var goodsId = $(goodsMain.vGoodsWrapId).data('goodsId');
+				var options = {
+						url : "/sec/xhr/goods/loadGoodsAdvancedCommentWriteArea"
+						, data : {
+							goodsEstmNo : goodsEstmNo
+							, goodsId : goodsId
+							, insertCheck : 'N'
+							, viewType : "PD"
+						}
+						, type : 'POST'
+						, dataType : 'html'
+						, done : function(data){
+							$("#writeArea").html(data);
+							$("#writeArea").show();
+							// $("#listArea").hide();  // review-list-form
+							$("#listArea .review-content-body").hide();
+							
+							// 상품평 가이드 버튼 출력
+							$("#commentGuideBtnArea").css('display', '');
+							// 상품평 작성 버튼 숨김
+							$("#commentWriteBtnArea").css('display', 'none');
+							// 상품평 작성 조건 문구 숨김
+							$("#commentWriteText").css('display', 'none');
+							// PD페이지 상품정보 미노출
+							$('.review-wt-product').css('display','none');	
+							// 선택된 별점에 따른 문구 노출
+							starText();
+							$("#starTitle").css('display','');
+						}
+					}
+					ajax.call(options);
+				
+				return false;
+			});
+		});
+
+		$(document).off("click", '#commentList .btn-sns-link').on("click", '#commentList .btn-sns-link', function(e) {
+			$(".sns-box").css('display', 'block');
+			var title = $(".itm-info-title").html();
+			var desc = $(this).parent().next().find('p')[0].innerText;
+			var img = $(this).parent().next().find('img');
+			var imgPath = ""
+			if(img.length !== 0){
+				imgPath = $(this).parent().next().find('img')[0].src;
+				$('head').children('meta[property="og:image"]').attr('content', imgPath);
+			}
+			var page = ""
+			if(location.hash != undefined && location.hash != ""){
+				page = "#"+location.hash;
+			}
+			var url = goodsComment.vShareUrl+goodsComment.vFocus+"review"+page;
+			openSns(url, title, imgPath, desc);
+			
+			/* var seoData = {
+				canonicalLink : url
+				, openGraphImage : imgPath
+				, facebookTp : 'article'
+				, facebookTitle : title
+				, facebookDescription : desc
+			}
+			
+			$("#facebookShareForm").remove();
+			var html = [];
+			html.push("<form name=\"facebookShareForm\" id=\"facebookShareForm\" target=\"fbSharePop\" >");
+			html.push("	<div style=\"display:none;\">");
+			html.push("		<input type=\"hidden\" name=\"canonicalLink\" va lue=\"" + url + "\">");
+			html.push("		<input type=\"hidden\" name=\"openGraphImage\" value=\"" + imgPath + "\">");
+			html.push("		<input type=\"hidden\" name=\"facebookTp\" value=\"article\">");
+			html.push("		<input type=\"hidden\" name=\"facebookTitle\" value=\"" + title + "\">");
+			html.push("		<input type=\"hidden\" name=\"facebookDescription\" value=\"" + desc + "\">");
+			html.push("	</div>");
+			html.push("</form>");
+			$("body").append(html.join('')); */
+			
+		});
+		
+		//상품평 리스트 이미지 클릭
+		$(".attached-file a", goodsComment.vWrapId).on('click', function(){
+
+			var imgSeq = $(this).data('imgSeq');
+			var cmntRowNum = $(this).data('cmntRowNum');
+			var goodsEstmNo = $(this).parents('.list-div').attr('id').replace("focus-div-","");
+			var addData = {
+					goodsEstmNo : goodsEstmNo
+					, imgSeq : imgSeq
+					, cmntRowNum : cmntRowNum
+					, goodsCmntTpCd : $("input[name=goodsCmntTpCd]").val()
+			}
+			goodsComment.fnGetGatherView(addData);
+			$('.select-img').click();
+		});
+		
+		//모바일 버전 키워드 숨김처리
+		var btnReviewKeywords = '';
+		var gatherView = $('#gatherview');
+		for(var i = 0; i < $(".review-list>li").length; i++) {
+			btnReviewKeywords = $('#cmntList'+i+' button.btn-review-keyword:gt(0)');
+			if(device.val == "m") {
+				btnReviewKeywords.hide();
+				gatherView.hide();
+			};
+		}
+
+		$('.btn-show-keywords').on('click', function(){
+			//더보기 버튼 숨김
+			$(this).hide();
+			//나머지 키워드 보여주기
+			$(this).parent('.review-lt-keywords').find('.btn-review-keyword').css('display','');
+		});
+
+		// 개통폰 필터 처리 후 베스트 상품평 처리
+		if ('Y' == $('#activatePhoneYn').val() && 2 > $('.best_review_list_wrap').length) {
+			bestCommentList();
+		}
+	});
+	
+	$(window).on('load', function(){
+		if($("#goods_comment_wrap").data('focus') != undefined && $("#goods_comment_wrap").data('focus') != ""){
+			var focus = $("#goods_comment_wrap").data('focus');
+			if(focus == "review"){
+				var offset = $('#comment-information').offset();
+				$('html').animate({scrollTop : offset.top - 100}, 300);
+			}else if(focus == "review-write"){
+				var offset = $('#comment-information').offset();
+				$('html').animate({scrollTop : offset.top - 100}, 300);
+				$("#commentWrite").trigger('click');
+			}else if(focus.indexOf("review-no-") != -1){
+				var focusNo = focus.replace("review-no", "");
+				var offset = $("#focus-div"+focusNo).offset();
+				$('html').animate({scrollTop : offset.top - 100}, 300);
+			}
+		}
+	});
+	
+	function setLayerCss(){
+		$("#commonAlert").css('max-width', '400px');
+	}
+</script>
+	<li id="cmntList0">
+			<!-- s : 221221 상품리스트 
+				! 기존 list-div에 advacement 클래스 추가
+				! 부득이 구조변경(태그 이동)됨
+			-->
+			<div class="list-div advancement" id="focus-div-296477">
+				<div class="review-wtInfo">
+					<div class="wtInfo-badge">
+						<!-- 베스트 상품평 뱃지 -->
+						<span class="badge best">베스트</span>
+						<!-- 상품평타입 -->
+						<span class="badge">일반 상품평</span>
+						<!-- 이벤트 상품평 뱃지 -->
+						<span class="badge">이벤트</span>
+						</div>
+					<div class="wtInfo-infogroup">
+						<div class="wtInfo-membership-rank">
+								<div class="member-rank grade-star"></div>
+									</div>
+						<div class="wtInfo-info">
+							<div class="wtInfo-top">
+								<!-- 작성자 -->
+								<span class="userid">end******</span>
+								</div>
+							<div class="wtInfo-bottom">
+								<div class="review-box">
+									<div class="review-starating" role="img" aria-label="별점  5점">
+										<span class="star-yellow">별점</span>
+												<span class="star-yellow" aria-hidden="true">별점</span>
+												<span class="star-yellow" aria-hidden="true">별점</span>
+												<span class="star-yellow" aria-hidden="true">별점</span>
+												<span class="star-yellow" aria-hidden="true">별점</span>
+												</div>
+									<!-- 작성일자 -->
+									<span class="date">2024-02-03</span>
+								</div>
+								<div class="title-box">
+									<!-- 구매처 -->
+									<span class="buyroot">기타 구매</span>
+										<span>갤럭시 S24 Ultra 자급제</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="review-con">
+					<div class="review-util">
+						<button type="button" class="btn-sns-link" data-title="공유" data-content="" data-close="툴팁 닫기">
+								<i class="icon ico-large ico-share2">소셜공유</i>
+							</button>
+							<div class="tooltip-content" style="display:none;">
+								<ol class="share-tooltip-box">
+									<li>
+										<a href="javascript:share('facebook');" class="pd-sns-facebook" title="새 창으로 열림">
+											<img src="/sec/static/_images/common/sns-facebook@3x.png" alt="페이스북 아이콘">
+											<span>페이스북</span>
+										</a>
+									</li>
+									<li>
+										<a href="javascript:void(0);" class="pd-sns-instagram" title="새 창으로 열림">
+											<img src="/sec/static/_images/common/sns_instagram.svg" alt="인스타그램 아이콘">
+											<span>인스타그램</span>
+										</a>
+									</li>
+								</ol>
+							</div>
+						</div>
+					
+					<div class="review-text">
+						<a href="javascript:;" class="txt-slide">
+							<p>
+							갤럭시를&nbsp;좋아하는&nbsp;사람입니다!&nbsp;작은것도&nbsp;그렇고&nbsp;전원버튼에&nbsp;지문인식&nbsp;있던게&nbsp;좋아서&nbsp;s10e&nbsp;사용하다가&nbsp;마음에&nbsp;드는게&nbsp;없어서,,&nbsp;5년동안&nbsp;못바꾸고&nbsp;있었는데&nbsp;이젠&nbsp;정말&nbsp;바꿔야겠더라구요.&nbsp;<br/><br/>24를&nbsp;사자니&nbsp;뭔가&nbsp;아쉽고&nbsp;플러스를&nbsp;하자니&nbsp;울트라랑&nbsp;0.1인치&nbsp;차이&nbsp;나는데&nbsp;기왕이면&nbsp;카메라도&nbsp;빵빵한&nbsp;울트라가&nbsp;낫지&nbsp;않을까&nbsp;싶어서&nbsp;울트라로&nbsp;사전구매&nbsp;질러버렸습니다.&nbsp;<br/><br/>이번에&nbsp;디자인도&nbsp;너무&nbsp;잘&nbsp;나온것&nbsp;같아요!&nbsp;그레이랑&nbsp;블랙중에&nbsp;고민&nbsp;많이&nbsp;했는데&nbsp;전&nbsp;블랙이&nbsp;제일&nbsp;예쁜것&nbsp;같아서&nbsp;블랙으로&nbsp;구매했습니다.&nbsp;(사실&nbsp;결제&nbsp;전까지&nbsp;고민했어요,,)<br/><br/>성능은&nbsp;s10e를&nbsp;5년동안&nbsp;썼기&nbsp;때문에&nbsp;뭔들&nbsp;안좋겠냐마는..&nbsp;이번에&nbsp;AI기능이&nbsp;추가되면서&nbsp;이것저것&nbsp;만져보니&nbsp;너무&nbsp;재밌고&nbsp;새로웠는데,&nbsp;특히&nbsp;사진&nbsp;편집&nbsp;기능이&nbsp;생각&nbsp;이상으로&nbsp;좋았어요!&nbsp;누끼를&nbsp;너무&nbsp;깔끔하게&nbsp;따더라구요.&nbsp;폰이&nbsp;커서&nbsp;떨어트리지만&nbsp;않았으면&nbsp;하는&nbsp;마음이에요..<br/><br/>갤럭시가&nbsp;점점&nbsp;발전하는게&nbsp;너무&nbsp;좋은데&nbsp;관계자들이&nbsp;소비자&nbsp;의견을&nbsp;적극반영해서&nbsp;부족한&nbsp;부분들이&nbsp;보완되고&nbsp;디테일을&nbsp;더욱&nbsp;더&nbsp;신경쓴&nbsp;좋은제품이&nbsp;나왔으면&nbsp;좋겠습니다!<br/><br/><br/>#삼성전자이벤트참여<br/><br/></p>
+						</a>
+						<div class="attached-file">
+							<ol>
+								<li>
+											<a href="javascript:;" title="첨부파일1 보기" data-img-seq="0">
+												<img src="//images.samsung.com/kdp/goods/2023/12/27/04fc3009-06f5-421e-aa80-1f3e4ca9c499.png?$200_N_PNG$" alt="갤럭시 S24 Ultra 자급제의 첨부파일1">
+														<div class="video-span-group">
+															<img src="/sec/static/_images/common/icon-slick-play-sml-wht.svg" alt="재생아이콘">
+														</div>
+													</a>
+										</li>
+									<li>
+											<a href="javascript:;" title="첨부파일2 보기" data-img-seq="1">
+												<img src="//images.samsung.com/kdp/goods_comment/296477/0b8956d0-6ebc-4a4c-a9c0-4b8c34a97a7d.jpg?$130_N_PNG$" alt="갤럭시 S24 Ultra 자급제의 첨부파일2">
+													</a>
+										</li>
+									</ol>
+						</div>
+					</div>
+				</div>
+				<div class="review-lt-keywords">
+					<!-- 키워드  -->
+					<button type="button" class="btn-review-keyword on" name="goodsCmntKwd" value="G01" disabled>
+								<img src="/sec/static/_images/emoji/emoji-01.png" alt="">
+								<span>성능이 좋아요</span>
+							</button>
+						<button type="button" class="btn-review-keyword on" name="goodsCmntKwd" value="G02" disabled>
+								<img src="/sec/static/_images/emoji/emoji-02.png" alt="">
+								<span>사용하기 편리해요</span>
+							</button>
+						<button type="button" class="btn-review-keyword on" name="goodsCmntKwd" value="G03" disabled>
+								<img src="/sec/static/_images/emoji/emoji-04.png" alt="">
+								<span>디자인이 마음에 들어요</span>
+							</button>
+						<button type="button" class="btn-review-keyword on" name="goodsCmntKwd" value="G07" disabled>
+								<img src="/sec/static/_images/emoji/emoji-05.png" alt="">
+								<span>색상이 마음에 들어요</span>
+							</button>
+						<button type="button" class="btn-review-keyword on" name="goodsCmntKwd" value="G09" disabled>
+								<img src="/sec/static/_images/emoji/emoji-07.png" alt="">
+								<span>소재가 마음에 들어요</span>
+							</button>
+						<!-- 키워드 더보기 버튼 -->
+						<button type="button" class="btn-show-keywords"><span class="sr-only">리뷰키워드 더보기</span><span>+4</span></button>
+						</div>
+				<div class="help-goods">
+					<input type="hidden" name="goodsEstmNo" value="296477"/>
+					<button type="button" class="btn-goods" name="opnnCheck" data-yescls="login-view-like">도움이 돼요<span name="gc-cnt">14</span></button>
+						</div>
+				<p class="btn-report">
+  					<a href="javascript:;" class="btn-underline" title="상품평 신고하기" onclick="layerMsgPop(this);" data-content="로그인 이후 신고 가능합니다.<br/>로그인 화면으로 이동하시겠습니까?"
+						data-yes="확인" data-yescls="report-login 296477" data-no="취소" data-close="툴팁 닫기" >신고</a>
+					</p>
+			</div>
+			<!-- e : 221221 상품리스트 -->
+
+		</li>
+		<li id="cmntList1">
+			<!-- s : 221221 상품리스트 
+				! 기존 list-div에 advacement 클래스 추가
+				! 부득이 구조변경(태그 이동)됨
+			-->
+			<div class="list-div advancement" id="focus-div-298151">
+				<div class="review-wtInfo">
+					<div class="wtInfo-badge">
+						<!-- 베스트 상품평 뱃지 -->
+						<span class="badge best">베스트</span>
+						<!-- 상품평타입 -->
+						<span class="badge">일반 상품평</span>
+						<!-- 이벤트 상품평 뱃지 -->
+						<span class="badge">이벤트</span>
+						</div>
+					<div class="wtInfo-infogroup">
+						<div class="wtInfo-membership-rank">
+								<div class="member-rank grade-star"></div>
+									</div>
+						<div class="wtInfo-info">
+							<div class="wtInfo-top">
+								<!-- 작성자 -->
+								<span class="userid">dal********</span>
+								</div>
+							<div class="wtInfo-bottom">
+								<div class="review-box">
+									<div class="review-starating" role="img" aria-label="별점  5점">
+										<span class="star-yellow">별점</span>
+												<span class="star-yellow" aria-hidden="true">별점</span>
+												<span class="star-yellow" aria-hidden="true">별점</span>
+												<span class="star-yellow" aria-hidden="true">별점</span>
+												<span class="star-yellow" aria-hidden="true">별점</span>
+												</div>
+									<!-- 작성일자 -->
+									<span class="date">2024-02-05</span>
+								</div>
+								<div class="title-box">
+									<!-- 구매처 -->
+									<span class="buyroot">기타 구매</span>
+										<span>갤럭시 S24 Ultra 자급제</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="review-con">
+					<div class="review-util">
+						<button type="button" class="btn-sns-link" data-title="공유" data-content="" data-close="툴팁 닫기">
+								<i class="icon ico-large ico-share2">소셜공유</i>
+							</button>
+							<div class="tooltip-content" style="display:none;">
+								<ol class="share-tooltip-box">
+									<li>
+										<a href="javascript:share('facebook');" class="pd-sns-facebook" title="새 창으로 열림">
+											<img src="/sec/static/_images/common/sns-facebook@3x.png" alt="페이스북 아이콘">
+											<span>페이스북</span>
+										</a>
+									</li>
+									<li>
+										<a href="javascript:void(0);" class="pd-sns-instagram" title="새 창으로 열림">
+											<img src="/sec/static/_images/common/sns_instagram.svg" alt="인스타그램 아이콘">
+											<span>인스타그램</span>
+										</a>
+									</li>
+								</ol>
+							</div>
+						</div>
+					
+					<div class="review-text">
+						<a href="javascript:;" class="txt-slide">
+							<p>
+							무게는&nbsp;무거워진것같지만<br/>앱의&nbsp;구동성이나&nbsp;AI기능이&nbsp;맘에들고<br/>부드럽고&nbsp;빠릅니다<br/>베터리도&nbsp;꽤오래&nbsp;버팁니다!!사전예약&nbsp;구매로&nbsp;스토리지업도&nbsp;받고&nbsp;써비스&nbsp;대만족입니다~<br/>오늘은&nbsp;예약번호&nbsp;쿠폰으로파손보험도&nbsp;들고왔어요!서비스센타에가니&nbsp;24전문&nbsp;설명해주시는&nbsp;담당자가&nbsp;계셔서&nbsp;너무&nbsp;편했습니다</p>
+						</a>
+						<div class="attached-file">
+							<ol>
+								<li>
+											<a href="javascript:;" title="첨부파일1 보기" data-img-seq="0">
+												<img src="//images.samsung.com/kdp/goods_comment/298151/3488e31f-2d33-4002-9f0c-04267b2eaa73.jpg?$130_N_PNG$" alt="갤럭시 S24 Ultra 자급제의 첨부파일1">
+													</a>
+										</li>
+									<li>
+											<a href="javascript:;" title="첨부파일2 보기" data-img-seq="1">
+												<img src="//images.samsung.com/kdp/goods/2023/12/27/1b274202-3256-415d-9ddb-e3a40e7c94d2.png?$200_N_PNG$" alt="갤럭시 S24 Ultra 자급제의 첨부파일2">
+														<div class="video-span-group">
+															<img src="/sec/static/_images/common/icon-slick-play-sml-wht.svg" alt="재생아이콘">
+														</div>
+													</a>
+										</li>
+									</ol>
+						</div>
+					</div>
+				</div>
+				<div class="review-lt-keywords">
+					<!-- 키워드  -->
+					<button type="button" class="btn-review-keyword on" name="goodsCmntKwd" value="G01" disabled>
+								<img src="/sec/static/_images/emoji/emoji-01.png" alt="">
+								<span>성능이 좋아요</span>
+							</button>
+						<button type="button" class="btn-review-keyword on" name="goodsCmntKwd" value="G02" disabled>
+								<img src="/sec/static/_images/emoji/emoji-02.png" alt="">
+								<span>사용하기 편리해요</span>
+							</button>
+						<!-- 키워드 더보기 버튼 -->
+						<button type="button" class="btn-show-keywords"><span class="sr-only">리뷰키워드 더보기</span><span>+1</span></button>
+						</div>
+				<div class="help-goods">
+					<input type="hidden" name="goodsEstmNo" value="298151"/>
+					<button type="button" class="btn-goods" name="opnnCheck" data-yescls="login-view-like">도움이 돼요<span name="gc-cnt">11</span></button>
+						</div>
+				<p class="btn-report">
+  					<a href="javascript:;" class="btn-underline" title="상품평 신고하기" onclick="layerMsgPop(this);" data-content="로그인 이후 신고 가능합니다.<br/>로그인 화면으로 이동하시겠습니까?"
+						data-yes="확인" data-yescls="report-login 298151" data-no="취소" data-close="툴팁 닫기" >신고</a>
+					</p>
+			</div>
+			<!-- e : 221221 상품리스트 -->
+
+		</li>
+		<li id="cmntList2">
+			<!-- s : 221221 상품리스트 
+				! 기존 list-div에 advacement 클래스 추가
+				! 부득이 구조변경(태그 이동)됨
+			-->
+			<div class="list-div advancement" id="focus-div-304636">
+				<div class="review-wtInfo">
+					<div class="wtInfo-badge">
+						<!-- 베스트 상품평 뱃지 -->
+						<span class="badge best">베스트</span>
+						<!-- 상품평타입 -->
+						<span class="badge">일반 상품평</span>
+						<!-- 이벤트 상품평 뱃지 -->
+						<span class="badge">이벤트</span>
+						</div>
+					<div class="wtInfo-infogroup">
+						<div class="wtInfo-membership-rank">
+								<div class="member-rank grade-star"></div>
+									</div>
+						<div class="wtInfo-info">
+							<div class="wtInfo-top">
+								<!-- 작성자 -->
+								<span class="userid">kor**</span>
+								</div>
+							<div class="wtInfo-bottom">
+								<div class="review-box">
+									<div class="review-starating" role="img" aria-label="별점  5점">
+										<span class="star-yellow">별점</span>
+												<span class="star-yellow" aria-hidden="true">별점</span>
+												<span class="star-yellow" aria-hidden="true">별점</span>
+												<span class="star-yellow" aria-hidden="true">별점</span>
+												<span class="star-yellow" aria-hidden="true">별점</span>
+												</div>
+									<!-- 작성일자 -->
+									<span class="date">2024-02-20</span>
+								</div>
+								<div class="title-box">
+									<!-- 구매처 -->
+									<span class="buyroot">삼성닷컴 구매</span>
+										<span>갤럭시 S24 Ultra 자급제</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="review-con">
+					<div class="review-util">
+						<button type="button" class="btn-sns-link" data-title="공유" data-content="" data-close="툴팁 닫기">
+								<i class="icon ico-large ico-share2">소셜공유</i>
+							</button>
+							<div class="tooltip-content" style="display:none;">
+								<ol class="share-tooltip-box">
+									<li>
+										<a href="javascript:share('facebook');" class="pd-sns-facebook" title="새 창으로 열림">
+											<img src="/sec/static/_images/common/sns-facebook@3x.png" alt="페이스북 아이콘">
+											<span>페이스북</span>
+										</a>
+									</li>
+									<li>
+										<a href="javascript:void(0);" class="pd-sns-instagram" title="새 창으로 열림">
+											<img src="/sec/static/_images/common/sns_instagram.svg" alt="인스타그램 아이콘">
+											<span>인스타그램</span>
+										</a>
+									</li>
+								</ol>
+							</div>
+						</div>
+					
+					<div class="review-text">
+						<a href="javascript:;" class="txt-slide">
+							<p>
+							<br/>출시&nbsp;시점에&nbsp;사전예약을&nbsp;못하였다.<br/>아니다.&nbsp;할수&nbsp;있었지만&nbsp;참았다!!<br/>살까&nbsp;말까&nbsp;1달을&nbsp;넘기고&nbsp;정말&nbsp;심각해서&nbsp;2주를&nbsp;고민해서&nbsp;결국은&nbsp;주문완료!!<br/>주문한지&nbsp;하루도&nbsp;안되서&nbsp;왔다.<br/><br/>일반&nbsp;택배수령이&nbsp;아니라&nbsp;삼성가전제품&nbsp;설치팀이&nbsp;배송을&nbsp;해준다;;;;;;;;;;;<br/>너무&nbsp;큰차가&nbsp;와서&nbsp;사실&nbsp;놀랬다!!<br/><br/>갤럭시클럽과&nbsp;삼성케어플러스까지&nbsp;월6600원으로&nbsp;혜택을&nbsp;주고도<br/>외벌이&nbsp;가장인&nbsp;나로서는&nbsp;가격에&nbsp;부담을&nbsp;느낄수&nbsp;밖에&nbsp;없었는데<br/>24개월&nbsp;36개월&nbsp;무이작&nbsp;할부는&nbsp;축복이었다!!<br/><br/>22울트라로&nbsp;쓰는데&nbsp;불편함이&nbsp;없었으니깐...<br/>하지만&nbsp;각진&nbsp;디자인의&nbsp;24울트라를&nbsp;기억속에서&nbsp;지울수가&nbsp;없었다.<br/>호불호가&nbsp;갈리겠지만&nbsp;이번&nbsp;24울트라의&nbsp;각진&nbsp;디자인은&nbsp;멋지만한게&nbsp;아니라,&nbsp;그립감도&nbsp;더&nbsp;좋아졌다.<br/><br/>그리고&nbsp;엣지의&nbsp;실종....<br/>엣지&nbsp;사용함에&nbsp;있어서도&nbsp;불편한점은&nbsp;없었다.&nbsp;<br/>사실&nbsp;대로&nbsp;말하면&nbsp;이질감은&nbsp;컸었다.<br/><br/>하지만&nbsp;이번&nbsp;23울트라의&nbsp;플랫화면&nbsp;크.......하!!!!!<br/>성능은&nbsp;기존의&nbsp;22울트라와는&nbsp;딴&nbsp;판이다.<br/><br/>더&nbsp;부드러운&nbsp;애니메이션과&nbsp;빠릿&nbsp;빠릿한&nbsp;성능<br/>전작대비&nbsp;더&nbsp;똑똑해&nbsp;졌다는&nbsp;스냅드래곤&nbsp;젠3의&nbsp;성능&nbsp;빨리&nbsp;느껴&nbsp;보고&nbsp;싶다!!<br/><br/>더&nbsp;빨라진&nbsp;두뇌와&nbsp;굿락의&nbsp;편리한&nbsp;기능들이&nbsp;얼마나&nbsp;나를&nbsp;만족시켜줄지&nbsp;기대중이다~</p>
+						</a>
+						<div class="attached-file">
+							<ol>
+								<li>
+											<a href="javascript:;" title="첨부파일1 보기" data-img-seq="0">
+												<img src="//images.samsung.com/kdp/goods_comment/304636/1fcb2aa4-8a11-43e3-b82d-9bc314d41fd7.jpg?$130_N_PNG$" alt="갤럭시 S24 Ultra 자급제의 첨부파일1">
+													</a>
+										</li>
+									<li>
+											<a href="javascript:;" title="첨부파일2 보기" data-img-seq="1">
+												<img src="//images.samsung.com/kdp/goods/2023/12/27/6f003990-9dbb-477d-be4b-184956b0ae6c.png?$200_N_PNG$" alt="갤럭시 S24 Ultra 자급제의 첨부파일2">
+														<div class="video-span-group">
+															<img src="/sec/static/_images/common/icon-slick-play-sml-wht.svg" alt="재생아이콘">
+														</div>
+													</a>
+										</li>
+									</ol>
+						</div>
+					</div>
+				</div>
+				<div class="review-lt-keywords">
+					<!-- 키워드  -->
+					<button type="button" class="btn-review-keyword on" name="goodsCmntKwd" value="G01" disabled>
+								<img src="/sec/static/_images/emoji/emoji-01.png" alt="">
+								<span>성능이 좋아요</span>
+							</button>
+						<button type="button" class="btn-review-keyword on" name="goodsCmntKwd" value="G02" disabled>
+								<img src="/sec/static/_images/emoji/emoji-02.png" alt="">
+								<span>사용하기 편리해요</span>
+							</button>
+						<button type="button" class="btn-review-keyword on" name="goodsCmntKwd" value="G03" disabled>
+								<img src="/sec/static/_images/emoji/emoji-04.png" alt="">
+								<span>디자인이 마음에 들어요</span>
+							</button>
+						<button type="button" class="btn-review-keyword on" name="goodsCmntKwd" value="G04" disabled>
+								<img src="/sec/static/_images/emoji/emoji-10.png" alt="">
+								<span>배송이 빨라요</span>
+							</button>
+						<button type="button" class="btn-review-keyword on" name="goodsCmntKwd" value="G05" disabled>
+								<img src="/sec/static/_images/emoji/emoji-03.png" alt="">
+								<span>튼튼해요</span>
+							</button>
+						<!-- 키워드 더보기 버튼 -->
+						<button type="button" class="btn-show-keywords"><span class="sr-only">리뷰키워드 더보기</span><span>+4</span></button>
+						</div>
+				<div class="help-goods">
+					<input type="hidden" name="goodsEstmNo" value="304636"/>
+					<button type="button" class="btn-goods" name="opnnCheck" data-yescls="login-view-like">도움이 돼요<span name="gc-cnt">6</span></button>
+						</div>
+				<p class="btn-report">
+  					<a href="javascript:;" class="btn-underline" title="상품평 신고하기" onclick="layerMsgPop(this);" data-content="로그인 이후 신고 가능합니다.<br/>로그인 화면으로 이동하시겠습니까?"
+						data-yes="확인" data-yescls="report-login 304636" data-no="취소" data-close="툴팁 닫기" >신고</a>
+					</p>
+			</div>
+			<!-- e : 221221 상품리스트 -->
+
+		</li>
+		<li id="cmntList3">
+			<!-- s : 221221 상품리스트 
+				! 기존 list-div에 advacement 클래스 추가
+				! 부득이 구조변경(태그 이동)됨
+			-->
+			<div class="list-div advancement" id="focus-div-303840">
+				<div class="review-wtInfo">
+					<div class="wtInfo-badge">
+						<!-- 베스트 상품평 뱃지 -->
+						<span class="badge best">베스트</span>
+						<!-- 상품평타입 -->
+						<span class="badge">일반 상품평</span>
+						<!-- 이벤트 상품평 뱃지 -->
+						<span class="badge">이벤트</span>
+						</div>
+					<div class="wtInfo-infogroup">
+						<div class="wtInfo-membership-rank">
+								<div class="member-rank grade-normal"></div>
+									</div>
+						<div class="wtInfo-info">
+							<div class="wtInfo-top">
+								<!-- 작성자 -->
+								<span class="userid">hwa******</span>
+								</div>
+							<div class="wtInfo-bottom">
+								<div class="review-box">
+									<div class="review-starating" role="img" aria-label="별점  5점">
+										<span class="star-yellow">별점</span>
+												<span class="star-yellow" aria-hidden="true">별점</span>
+												<span class="star-yellow" aria-hidden="true">별점</span>
+												<span class="star-yellow" aria-hidden="true">별점</span>
+												<span class="star-yellow" aria-hidden="true">별점</span>
+												</div>
+									<!-- 작성일자 -->
+									<span class="date">2024-02-18</span>
+								</div>
+								<div class="title-box">
+									<!-- 구매처 -->
+									<span class="buyroot">기타 구매</span>
+										<span>갤럭시 S24 Ultra 자급제</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="review-con">
+					<div class="review-util">
+						<button type="button" class="btn-sns-link" data-title="공유" data-content="" data-close="툴팁 닫기">
+								<i class="icon ico-large ico-share2">소셜공유</i>
+							</button>
+							<div class="tooltip-content" style="display:none;">
+								<ol class="share-tooltip-box">
+									<li>
+										<a href="javascript:share('facebook');" class="pd-sns-facebook" title="새 창으로 열림">
+											<img src="/sec/static/_images/common/sns-facebook@3x.png" alt="페이스북 아이콘">
+											<span>페이스북</span>
+										</a>
+									</li>
+									<li>
+										<a href="javascript:void(0);" class="pd-sns-instagram" title="새 창으로 열림">
+											<img src="/sec/static/_images/common/sns_instagram.svg" alt="인스타그램 아이콘">
+											<span>인스타그램</span>
+										</a>
+									</li>
+								</ol>
+							</div>
+						</div>
+					
+					<div class="review-text">
+						<a href="javascript:;" class="txt-slide">
+							<p>
+							#삼성전자이벤트참여<br/>배터리&nbsp;오래가고&nbsp;충전걱정&nbsp;안해요.<br/>갤럭시&nbsp;s24&nbsp;울트라&nbsp;자급제폰으로&nbsp;구입했는데&nbsp;받아보니&nbsp;크긴&nbsp;하네요.&nbsp;무겁기도&nbsp;하구요.<br/>그런데&nbsp;사용해보니&nbsp;넘&nbsp;편리하고&nbsp;좋아요.<br/>AI기능으로&nbsp;번역되는것이&nbsp;넘&nbsp;좋았어요.<br/>해외여행가면&nbsp;언어때문에&nbsp;몸짓발짓&nbsp;다&nbsp;했었는데&nbsp;이젠&nbsp;걱정없겠어요.<br/>아이들&nbsp;도움&nbsp;안받고&nbsp;자유여행가야겠어요.<br/>사진도&nbsp;진짜&nbsp;선명하고&nbsp;백배줌이다&nbsp;보니&nbsp;웬만큼&nbsp;멀리있어도&nbsp;다&nbsp;찍을수&nbsp;있겠어요.<br/>갤럭시s24.&nbsp;울트라.<br/>현명한&nbsp;선택인것&nbsp;같아요.</p>
+						</a>
+						<div class="attached-file">
+							<ol>
+								<li>
+											<a href="javascript:;" title="첨부파일1 보기" data-img-seq="0">
+												<img src="//images.samsung.com/kdp/goods_comment/303840/1c2878c9-4704-450c-885b-87573d7eb38d.jpg?$130_N_PNG$" alt="갤럭시 S24 Ultra 자급제의 첨부파일1">
+													</a>
+										</li>
+									<li>
+											<a href="javascript:;" title="첨부파일2 보기" data-img-seq="1">
+												<img src="//images.samsung.com/kdp/goods_comment/303840/745fd86e-5769-4bdf-996d-fc13ce9e6c39.jpg?$130_N_PNG$" alt="갤럭시 S24 Ultra 자급제의 첨부파일2">
+													</a>
+										</li>
+									<li>
+											<a href="javascript:;" title="첨부파일3 보기" data-img-seq="2">
+												<img src="//images.samsung.com/kdp/goods_comment/303840/dd14eae7-68b5-472d-a7e4-a9c212ebade6.jpg?$130_N_PNG$" alt="갤럭시 S24 Ultra 자급제의 첨부파일3">
+													</a>
+										</li>
+									<li>
+											<a href="javascript:;" title="첨부파일4 보기" data-img-seq="3">
+												<img src="//images.samsung.com/kdp/goods/2023/12/27/1b274202-3256-415d-9ddb-e3a40e7c94d2.png?$200_N_PNG$" alt="갤럭시 S24 Ultra 자급제의 첨부파일4">
+														<div class="video-span-group">
+															<img src="/sec/static/_images/common/icon-slick-play-sml-wht.svg" alt="재생아이콘">
+														</div>
+													</a>
+										</li>
+									</ol>
+						</div>
+					</div>
+				</div>
+				<div class="review-lt-keywords">
+					<!-- 키워드  -->
+					<button type="button" class="btn-review-keyword on" name="goodsCmntKwd" value="G01" disabled>
+								<img src="/sec/static/_images/emoji/emoji-01.png" alt="">
+								<span>성능이 좋아요</span>
+							</button>
+						<button type="button" class="btn-review-keyword on" name="goodsCmntKwd" value="G02" disabled>
+								<img src="/sec/static/_images/emoji/emoji-02.png" alt="">
+								<span>사용하기 편리해요</span>
+							</button>
+						<button type="button" class="btn-review-keyword on" name="goodsCmntKwd" value="G05" disabled>
+								<img src="/sec/static/_images/emoji/emoji-03.png" alt="">
+								<span>튼튼해요</span>
+							</button>
+						<!-- 키워드 더보기 버튼 -->
+						<button type="button" class="btn-show-keywords"><span class="sr-only">리뷰키워드 더보기</span><span>+2</span></button>
+						</div>
+				<div class="help-goods">
+					<input type="hidden" name="goodsEstmNo" value="303840"/>
+					<button type="button" class="btn-goods" name="opnnCheck" data-yescls="login-view-like">도움이 돼요<span name="gc-cnt">5</span></button>
+						</div>
+				<p class="btn-report">
+  					<a href="javascript:;" class="btn-underline" title="상품평 신고하기" onclick="layerMsgPop(this);" data-content="로그인 이후 신고 가능합니다.<br/>로그인 화면으로 이동하시겠습니까?"
+						data-yes="확인" data-yescls="report-login 303840" data-no="취소" data-close="툴팁 닫기" >신고</a>
+					</p>
+			</div>
+			<!-- e : 221221 상품리스트 -->
+
+		</li>
+		<li id="cmntList4">
+			<!-- s : 221221 상품리스트 
+				! 기존 list-div에 advacement 클래스 추가
+				! 부득이 구조변경(태그 이동)됨
+			-->
+			<div class="list-div advancement" id="focus-div-317763">
+				<div class="review-wtInfo">
+					<div class="wtInfo-badge">
+						<!-- 베스트 상품평 뱃지 -->
+						<span class="badge best">베스트</span>
+						<!-- 상품평타입 -->
+						<span class="badge">한달 상품평</span>
+						<!-- 이벤트 상품평 뱃지 -->
+						</div>
+					<div class="wtInfo-infogroup">
+						<div class="wtInfo-membership-rank">
+								<div class="member-rank grade-star"></div>
+									</div>
+						<div class="wtInfo-info">
+							<div class="wtInfo-top">
+								<!-- 작성자 -->
+								<span class="userid">kor**</span>
+								</div>
+							<div class="wtInfo-bottom">
+								<div class="review-box">
+									<div class="review-starating" role="img" aria-label="별점  5점">
+										<span class="star-yellow">별점</span>
+												<span class="star-yellow" aria-hidden="true">별점</span>
+												<span class="star-yellow" aria-hidden="true">별점</span>
+												<span class="star-yellow" aria-hidden="true">별점</span>
+												<span class="star-yellow" aria-hidden="true">별점</span>
+												</div>
+									<!-- 작성일자 -->
+									<span class="date">2024-03-30</span>
+								</div>
+								<div class="title-box">
+									<!-- 구매처 -->
+									<span class="buyroot">삼성닷컴 구매</span>
+										<span>갤럭시 S24 Ultra 자급제</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="review-con">
+					<div class="review-util">
+						<button type="button" class="btn-sns-link" data-title="공유" data-content="" data-close="툴팁 닫기">
+								<i class="icon ico-large ico-share2">소셜공유</i>
+							</button>
+							<div class="tooltip-content" style="display:none;">
+								<ol class="share-tooltip-box">
+									<li>
+										<a href="javascript:share('facebook');" class="pd-sns-facebook" title="새 창으로 열림">
+											<img src="/sec/static/_images/common/sns-facebook@3x.png" alt="페이스북 아이콘">
+											<span>페이스북</span>
+										</a>
+									</li>
+									<li>
+										<a href="javascript:void(0);" class="pd-sns-instagram" title="새 창으로 열림">
+											<img src="/sec/static/_images/common/sns_instagram.svg" alt="인스타그램 아이콘">
+											<span>인스타그램</span>
+										</a>
+									</li>
+								</ol>
+							</div>
+						</div>
+					
+					<div class="review-text">
+						<a href="javascript:;" class="txt-slide">
+							<p>
+							갤럭시를&nbsp;&nbsp;사용하는&nbsp;이유<br/>1.&nbsp;국내유일&nbsp;스마트폰<br/>2.&nbsp;내가&nbsp;원하는대로&nbsp;사용가능<br/>3.&nbsp;통화녹음<br/>4.&nbsp;삼성페이<br/>5.루틴&nbsp;및&nbsp;모드&nbsp;사용<br/>-&nbsp;재생플레이어시&nbsp;자동&nbsp;화면회전<br/>-&nbsp;알람&nbsp;삭제해도&nbsp;특정시간에&nbsp;자동&nbsp;켜짐<br/>-&nbsp;굿락의&nbsp;앱부스터&nbsp;1일&nbsp;1회만으로&nbsp;새폰&nbsp;느낌<br/>*터치&nbsp;매크로&nbsp;기능으로&nbsp;자동으로&nbsp;실행가능<br/>-&nbsp;&nbsp;OTT&nbsp;켜놓고&nbsp;잘때&nbsp;배터리&nbsp;걱정없이<br/>&nbsp;&nbsp;&nbsp;&nbsp;특정시간&nbsp;재생중지<br/>-&nbsp;배달&nbsp;부업&nbsp;종사자로서&nbsp;모드기능을<br/>&nbsp;&nbsp;한번의&nbsp;터치로&nbsp;자유롭게&nbsp;설정가능<br/><br/><br/>조금의&nbsp;아이디어와&nbsp;한글만&nbsp;알면&nbsp;&nbsp;갤럭시스마드폰의&nbsp;사용능력을&nbsp;120%&nbsp;쓸수있습니다.&nbsp;</p>
+						</a>
+						<div class="attached-file">
+							<ol>
+								<li>
+											<a href="javascript:;" title="첨부파일1 보기" data-img-seq="0">
+												<img src="//images.samsung.com/kdp/goods/2023/12/27/6f003990-9dbb-477d-be4b-184956b0ae6c.png?$200_N_PNG$" alt="갤럭시 S24 Ultra 자급제의 첨부파일1">
+														<div class="video-span-group">
+															<img src="/sec/static/_images/common/icon-slick-play-sml-wht.svg" alt="재생아이콘">
+														</div>
+													</a>
+										</li>
+									<li>
+											<a href="javascript:;" title="첨부파일2 보기" data-img-seq="1">
+												<img src="//images.samsung.com/kdp/goods/2023/12/27/6f003990-9dbb-477d-be4b-184956b0ae6c.png?$200_N_PNG$" alt="갤럭시 S24 Ultra 자급제의 첨부파일2">
+														<div class="video-span-group">
+															<img src="/sec/static/_images/common/icon-slick-play-sml-wht.svg" alt="재생아이콘">
+														</div>
+													</a>
+										</li>
+									<li>
+											<a href="javascript:;" title="첨부파일3 보기" data-img-seq="2">
+												<img src="//images.samsung.com/kdp/goods_comment/317763/24668208-409e-4ac5-b085-5d1c5cfd2725.jpg?$130_N_PNG$" alt="갤럭시 S24 Ultra 자급제의 첨부파일3">
+													</a>
+										</li>
+									</ol>
+						</div>
+					</div>
+				</div>
+				<div class="review-lt-keywords">
+					<!-- 키워드  -->
+					<button type="button" class="btn-review-keyword on" name="goodsCmntKwd" value="G01" disabled>
+								<img src="/sec/static/_images/emoji/emoji-01.png" alt="">
+								<span>성능이 좋아요</span>
+							</button>
+						<button type="button" class="btn-review-keyword on" name="goodsCmntKwd" value="G02" disabled>
+								<img src="/sec/static/_images/emoji/emoji-02.png" alt="">
+								<span>사용하기 편리해요</span>
+							</button>
+						<button type="button" class="btn-review-keyword on" name="goodsCmntKwd" value="G03" disabled>
+								<img src="/sec/static/_images/emoji/emoji-04.png" alt="">
+								<span>디자인이 마음에 들어요</span>
+							</button>
+						<button type="button" class="btn-review-keyword on" name="goodsCmntKwd" value="G07" disabled>
+								<img src="/sec/static/_images/emoji/emoji-05.png" alt="">
+								<span>색상이 마음에 들어요</span>
+							</button>
+						<button type="button" class="btn-review-keyword on" name="goodsCmntKwd" value="G09" disabled>
+								<img src="/sec/static/_images/emoji/emoji-07.png" alt="">
+								<span>소재가 마음에 들어요</span>
+							</button>
+						<!-- 키워드 더보기 버튼 -->
+						<button type="button" class="btn-show-keywords"><span class="sr-only">리뷰키워드 더보기</span><span>+4</span></button>
+						</div>
+				<div class="help-goods">
+					<input type="hidden" name="goodsEstmNo" value="317763"/>
+					<button type="button" class="btn-goods" name="opnnCheck" data-yescls="login-view-like">도움이 돼요<span name="gc-cnt">2</span></button>
+						</div>
+				<p class="btn-report">
+  					<a href="javascript:;" class="btn-underline" title="상품평 신고하기" onclick="layerMsgPop(this);" data-content="로그인 이후 신고 가능합니다.<br/>로그인 화면으로 이동하시겠습니까?"
+						data-yes="확인" data-yescls="report-login 317763" data-no="취소" data-close="툴팁 닫기" >신고</a>
+					</p>
+			</div>
+			<!-- e : 221221 상품리스트 -->
+
+		</li>
+		<li id="cmntList5">
+			<!-- s : 221221 상품리스트 
+				! 기존 list-div에 advacement 클래스 추가
+				! 부득이 구조변경(태그 이동)됨
+			-->
+			<div class="list-div advancement" id="focus-div-333972">
+				<div class="review-wtInfo">
+					<div class="wtInfo-badge">
+						<!-- 베스트 상품평 뱃지 -->
+						<span class="badge best">베스트</span>
+						<!-- 상품평타입 -->
+						<span class="badge">일반 상품평</span>
+						<!-- 이벤트 상품평 뱃지 -->
+						<span class="badge">이벤트</span>
+						</div>
+					<div class="wtInfo-infogroup">
+						<div class="wtInfo-info">
+							<div class="wtInfo-top">
+								<!-- 작성자 -->
+								<span class="userid">lan*******</span>
+								</div>
+							<div class="wtInfo-bottom">
+								<div class="review-box">
+									<div class="review-starating" role="img" aria-label="별점  5점">
+										<span class="star-yellow">별점</span>
+												<span class="star-yellow" aria-hidden="true">별점</span>
+												<span class="star-yellow" aria-hidden="true">별점</span>
+												<span class="star-yellow" aria-hidden="true">별점</span>
+												<span class="star-yellow" aria-hidden="true">별점</span>
+												</div>
+									<!-- 작성일자 -->
+									<span class="date">2024-05-24</span>
+								</div>
+								<div class="title-box">
+									<!-- 구매처 -->
+									<span class="buyroot">삼성닷컴 구매</span>
+										<span>갤럭시 S24 Ultra 자급제</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="review-con">
+					<div class="review-util">
+						<button type="button" class="btn-sns-link" data-title="공유" data-content="" data-close="툴팁 닫기">
+								<i class="icon ico-large ico-share2">소셜공유</i>
+							</button>
+							<div class="tooltip-content" style="display:none;">
+								<ol class="share-tooltip-box">
+									<li>
+										<a href="javascript:share('facebook');" class="pd-sns-facebook" title="새 창으로 열림">
+											<img src="/sec/static/_images/common/sns-facebook@3x.png" alt="페이스북 아이콘">
+											<span>페이스북</span>
+										</a>
+									</li>
+									<li>
+										<a href="javascript:void(0);" class="pd-sns-instagram" title="새 창으로 열림">
+											<img src="/sec/static/_images/common/sns_instagram.svg" alt="인스타그램 아이콘">
+											<span>인스타그램</span>
+										</a>
+									</li>
+								</ol>
+							</div>
+						</div>
+					
+					<div class="review-text">
+						<a href="javascript:;" class="txt-slide">
+							<p>
+							콘서트를&nbsp;다닐때마다&nbsp;폰&nbsp;사진성능이&nbsp;좋지않아&nbsp;아쉬움&nbsp;가득이어서&nbsp;큰맘&nbsp;먹고&nbsp;새로&nbsp;구입했는데&nbsp;진짜&nbsp;사진&nbsp;찍을&nbsp;맛이&nbsp;난다고&nbsp;할까&nbsp;.&nbsp;자꾸자꾸&nbsp;나가고&nbsp;싶어집니다.&nbsp;6월&nbsp;콘서트&nbsp;가서&nbsp;멋진&nbsp;장면을&nbsp;찍기로&nbsp;하고&nbsp;<br/>일상에서의&nbsp;사진을&nbsp;찍어봅니다.<br/>좋은&nbsp;폰&nbsp;&nbsp;잘&nbsp;사용하겠습니다.</p>
+						</a>
+						<div class="attached-file">
+							<ol>
+								<li>
+											<a href="javascript:;" title="첨부파일1 보기" data-img-seq="0">
+												<img src="//images.samsung.com/kdp/goods/2023/12/27/92b0529b-f497-4597-8003-9b5627ca62ec.png?$200_N_PNG$" alt="갤럭시 S24 Ultra 자급제의 첨부파일1">
+														<div class="video-span-group">
+															<img src="/sec/static/_images/common/icon-slick-play-sml-wht.svg" alt="재생아이콘">
+														</div>
+													</a>
+										</li>
+									</ol>
+						</div>
+					</div>
+				</div>
+				<div class="review-lt-keywords">
+					<!-- 키워드  -->
+					<button type="button" class="btn-review-keyword on" name="goodsCmntKwd" value="G01" disabled>
+								<img src="/sec/static/_images/emoji/emoji-01.png" alt="">
+								<span>성능이 좋아요</span>
+							</button>
+						<button type="button" class="btn-review-keyword on" name="goodsCmntKwd" value="G07" disabled>
+								<img src="/sec/static/_images/emoji/emoji-05.png" alt="">
+								<span>색상이 마음에 들어요</span>
+							</button>
+						<button type="button" class="btn-review-keyword on" name="goodsCmntKwd" value="G08" disabled>
+								<img src="/sec/static/_images/emoji/emoji-06.png" alt="">
+								<span>크기가 적당해요</span>
+							</button>
+						<!-- 키워드 더보기 버튼 -->
+						<button type="button" class="btn-show-keywords"><span class="sr-only">리뷰키워드 더보기</span><span>+2</span></button>
+						</div>
+				<div class="help-goods">
+					<input type="hidden" name="goodsEstmNo" value="333972"/>
+					<button type="button" class="btn-goods" name="opnnCheck" data-yescls="login-view-like">도움이 돼요<span name="gc-cnt">0</span></button>
+						</div>
+				<p class="btn-report">
+  					<a href="javascript:;" class="btn-underline" title="상품평 신고하기" onclick="layerMsgPop(this);" data-content="로그인 이후 신고 가능합니다.<br/>로그인 화면으로 이동하시겠습니까?"
+						data-yes="확인" data-yescls="report-login 333972" data-no="취소" data-close="툴팁 닫기" >신고</a>
+					</p>
+			</div>
+			<!-- e : 221221 상품리스트 -->
+
+		</li>
+		<li id="cmntList6">
+			<!-- s : 221221 상품리스트 
+				! 기존 list-div에 advacement 클래스 추가
+				! 부득이 구조변경(태그 이동)됨
+			-->
+			<div class="list-div advancement" id="focus-div-296653">
+				<div class="review-wtInfo">
+					<div class="wtInfo-badge">
+						<!-- 베스트 상품평 뱃지 -->
+						<span class="badge best">베스트</span>
+						<!-- 상품평타입 -->
+						<span class="badge">일반 상품평</span>
+						<!-- 이벤트 상품평 뱃지 -->
+						</div>
+					<div class="wtInfo-infogroup">
+						<div class="wtInfo-membership-rank">
+								<div class="member-rank grade-normal"></div>
+									</div>
+						<div class="wtInfo-info">
+							<div class="wtInfo-top">
+								<!-- 작성자 -->
+								<span class="userid">lsh********</span>
+								</div>
+							<div class="wtInfo-bottom">
+								<div class="review-box">
+									<div class="review-starating" role="img" aria-label="별점  5점">
+										<span class="star-yellow">별점</span>
+												<span class="star-yellow" aria-hidden="true">별점</span>
+												<span class="star-yellow" aria-hidden="true">별점</span>
+												<span class="star-yellow" aria-hidden="true">별점</span>
+												<span class="star-yellow" aria-hidden="true">별점</span>
+												</div>
+									<!-- 작성일자 -->
+									<span class="date">2024-02-03</span>
+								</div>
+								<div class="title-box">
+									<!-- 구매처 -->
+									<span class="buyroot">기타 구매</span>
+										<span>갤럭시 S24 Ultra 자급제</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="review-con">
+					<div class="review-util">
+						<button type="button" class="btn-sns-link" data-title="공유" data-content="" data-close="툴팁 닫기">
+								<i class="icon ico-large ico-share2">소셜공유</i>
+							</button>
+							<div class="tooltip-content" style="display:none;">
+								<ol class="share-tooltip-box">
+									<li>
+										<a href="javascript:share('facebook');" class="pd-sns-facebook" title="새 창으로 열림">
+											<img src="/sec/static/_images/common/sns-facebook@3x.png" alt="페이스북 아이콘">
+											<span>페이스북</span>
+										</a>
+									</li>
+									<li>
+										<a href="javascript:void(0);" class="pd-sns-instagram" title="새 창으로 열림">
+											<img src="/sec/static/_images/common/sns_instagram.svg" alt="인스타그램 아이콘">
+											<span>인스타그램</span>
+										</a>
+									</li>
+								</ol>
+							</div>
+						</div>
+					
+					<div class="review-text">
+						<a href="javascript:;" class="txt-slide">
+							<p>
+							왜&nbsp;한국인만&nbsp;호구인가여?&nbsp;&nbsp;미국에&nbsp;삼성홈페이지는&nbsp;반가격인데&nbsp;왜&nbsp;우리만&nbsp;비싸게&nbsp;주고&nbsp;사야&nbsp;하는거죠?&nbsp;미국은&nbsp;삼성홈페이지에서&nbsp;보상판매도&nbsp;하는데&nbsp;우리&nbsp;대한민국은&nbsp;왜&nbsp;없는거조?&nbsp;<br/>구글에서&nbsp;미국의&nbsp;삼성&nbsp;홈페이지&nbsp;볼수&nbsp;있다는거&nbsp;모르나여?</p>
+						</a>
+						<div class="attached-file">
+							<ol>
+								<li>
+											<a href="javascript:;" title="첨부파일1 보기" data-img-seq="0">
+												<img src="//images.samsung.com/kdp/goods_comment/296653/18c55b44-173b-479f-8dba-af00287fbd80.png?$130_N_PNG$" alt="갤럭시 S24 Ultra 자급제의 첨부파일1">
+													</a>
+										</li>
+									<li>
+											<a href="javascript:;" title="첨부파일2 보기" data-img-seq="1">
+												<img src="//images.samsung.com/kdp/goods_comment/296653/78a2f3b0-4961-4818-9800-f421222e32b9.png?$130_N_PNG$" alt="갤럭시 S24 Ultra 자급제의 첨부파일2">
+													</a>
+										</li>
+									</ol>
+						</div>
+					</div>
+				</div>
+				<div class="review-lt-keywords">
+					<!-- 키워드  -->
+					<button type="button" class="btn-review-keyword on" name="goodsCmntKwd" value="G99" disabled>
+								<img src="/sec/static/_images/emoji/emoji-11.png" alt="">
+								<span>원하는 선택지가 없어요</span>
+							</button>
+						<!-- 키워드 더보기 버튼 -->
+						</div>
+				<div class="help-goods">
+					<input type="hidden" name="goodsEstmNo" value="296653"/>
+					<button type="button" class="btn-goods" name="opnnCheck" data-yescls="login-view-like">도움이 돼요<span name="gc-cnt">87</span></button>
+						</div>
+				<p class="btn-report">
+  					<a href="javascript:;" class="btn-underline" title="상품평 신고하기" onclick="layerMsgPop(this);" data-content="로그인 이후 신고 가능합니다.<br/>로그인 화면으로 이동하시겠습니까?"
+						data-yes="확인" data-yescls="report-login 296653" data-no="취소" data-close="툴팁 닫기" >신고</a>
+					</p>
+			</div>
+			<!-- e : 221221 상품리스트 -->
+
+		</li>
+		<li id="cmntList7">
+			<!-- s : 221221 상품리스트 
+				! 기존 list-div에 advacement 클래스 추가
+				! 부득이 구조변경(태그 이동)됨
+			-->
+			<div class="list-div advancement" id="focus-div-295864">
+				<div class="review-wtInfo">
+					<div class="wtInfo-badge">
+						<!-- 베스트 상품평 뱃지 -->
+						<span class="badge best">베스트</span>
+						<!-- 상품평타입 -->
+						<span class="badge">일반 상품평</span>
+						<!-- 이벤트 상품평 뱃지 -->
+						<span class="badge">이벤트</span>
+						</div>
+					<div class="wtInfo-infogroup">
+						<div class="wtInfo-membership-rank">
+								<div class="member-rank grade-star"></div>
+									</div>
+						<div class="wtInfo-info">
+							<div class="wtInfo-top">
+								<!-- 작성자 -->
+								<span class="userid">010******93</span>
+								</div>
+							<div class="wtInfo-bottom">
+								<div class="review-box">
+									<div class="review-starating" role="img" aria-label="별점  5점">
+										<span class="star-yellow">별점</span>
+												<span class="star-yellow" aria-hidden="true">별점</span>
+												<span class="star-yellow" aria-hidden="true">별점</span>
+												<span class="star-yellow" aria-hidden="true">별점</span>
+												<span class="star-yellow" aria-hidden="true">별점</span>
+												</div>
+									<!-- 작성일자 -->
+									<span class="date">2024-02-02</span>
+								</div>
+								<div class="title-box">
+									<!-- 구매처 -->
+									<span class="buyroot">기타 구매</span>
+										<span>갤럭시 S24 Ultra 자급제</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="review-con">
+					<div class="review-util">
+						<button type="button" class="btn-sns-link" data-title="공유" data-content="" data-close="툴팁 닫기">
+								<i class="icon ico-large ico-share2">소셜공유</i>
+							</button>
+							<div class="tooltip-content" style="display:none;">
+								<ol class="share-tooltip-box">
+									<li>
+										<a href="javascript:share('facebook');" class="pd-sns-facebook" title="새 창으로 열림">
+											<img src="/sec/static/_images/common/sns-facebook@3x.png" alt="페이스북 아이콘">
+											<span>페이스북</span>
+										</a>
+									</li>
+									<li>
+										<a href="javascript:void(0);" class="pd-sns-instagram" title="새 창으로 열림">
+											<img src="/sec/static/_images/common/sns_instagram.svg" alt="인스타그램 아이콘">
+											<span>인스타그램</span>
+										</a>
+									</li>
+								</ol>
+							</div>
+						</div>
+					
+					<div class="review-text">
+						<a href="javascript:;" class="txt-slide">
+							<p>
+							10년만에&nbsp;갤럭시로&nbsp;넘어왔습니다!<br/>프로&nbsp;맥스랑&nbsp;크기는&nbsp;비슷하나&nbsp;화면이&nbsp;네모&nbsp;깍둑해서&nbsp;화면은&nbsp;더&nbsp;큰&nbsp;느낌이고&nbsp;영상&nbsp;보기에도&nbsp;좋아요.<br/><br/>카메라&nbsp;화질도&nbsp;그렇고&nbsp;자체&nbsp;후&nbsp;보정까지&nbsp;있어서&nbsp;실내에서&nbsp;촬영할&nbsp;때&nbsp;너무&nbsp;좋습니다.<br/><br/>키보드&nbsp;위에&nbsp;실시간&nbsp;번역&nbsp;기능도&nbsp;있어서&nbsp;한글로&nbsp;적으면&nbsp;영어로&nbsp;번역되어&nbsp;한번씩&nbsp;스펠링이&nbsp;생각&nbsp;안날&nbsp;때&nbsp;인터넷&nbsp;검색하곤&nbsp;했는데&nbsp;너무&nbsp;유용하게&nbsp;잘&nbsp;쓰고&nbsp;있어요:)<br/><br/>티타늄&nbsp;소재다보니&nbsp;겨울에는&nbsp;너무&nbsp;차가워서&nbsp;케이스를&nbsp;사용해야&nbsp;할꺼&nbsp;같아요~~(손&nbsp;시렵네요🤣)<br/><br/>사전예약&nbsp;후&nbsp;매장픽업도&nbsp;너무&nbsp;좋아서&nbsp;택배&nbsp;배송&nbsp;안기다려도&nbsp;되고&nbsp;너무&nbsp;좋네요ㅎㅎ&nbsp;<br/>오래오래&nbsp;사용하겠습니다!</p>
+						</a>
+						<div class="attached-file">
+							<ol>
+								<li>
+											<a href="javascript:;" title="첨부파일1 보기" data-img-seq="0">
+												<img src="//images.samsung.com/kdp/goods_comment/295864/7036ae11-4bfb-494b-aa12-83a5dc2305cf.gif?$130_N_PNG$" alt="갤럭시 S24 Ultra 자급제의 첨부파일1">
+													</a>
+										</li>
+									<li>
+											<a href="javascript:;" title="첨부파일2 보기" data-img-seq="1">
+												<img src="//images.samsung.com/kdp/goods_comment/295864/fc76af86-6c93-4e47-8023-587b32d0d2ec.gif?$130_N_PNG$" alt="갤럭시 S24 Ultra 자급제의 첨부파일2">
+													</a>
+										</li>
+									<li>
+											<a href="javascript:;" title="첨부파일3 보기" data-img-seq="2">
+												<img src="//images.samsung.com/kdp/goods_comment/295864/8bd751d7-c809-4b91-918a-a540f50b14b7.JPG?$130_N_PNG$" alt="갤럭시 S24 Ultra 자급제의 첨부파일3">
+													</a>
+										</li>
+									<li>
+											<a href="javascript:;" title="첨부파일4 보기" data-img-seq="3">
+												<img src="//images.samsung.com/kdp/goods_comment/295864/1cf37264-6f55-4156-8d33-aeaaa5212847.JPG?$130_N_PNG$" alt="갤럭시 S24 Ultra 자급제의 첨부파일4">
+													</a>
+										</li>
+									</ol>
+						</div>
+					</div>
+				</div>
+				<div class="review-lt-keywords">
+					<!-- 키워드  -->
+					<button type="button" class="btn-review-keyword on" name="goodsCmntKwd" value="G01" disabled>
+								<img src="/sec/static/_images/emoji/emoji-01.png" alt="">
+								<span>성능이 좋아요</span>
+							</button>
+						<button type="button" class="btn-review-keyword on" name="goodsCmntKwd" value="G02" disabled>
+								<img src="/sec/static/_images/emoji/emoji-02.png" alt="">
+								<span>사용하기 편리해요</span>
+							</button>
+						<button type="button" class="btn-review-keyword on" name="goodsCmntKwd" value="G03" disabled>
+								<img src="/sec/static/_images/emoji/emoji-04.png" alt="">
+								<span>디자인이 마음에 들어요</span>
+							</button>
+						<button type="button" class="btn-review-keyword on" name="goodsCmntKwd" value="G04" disabled>
+								<img src="/sec/static/_images/emoji/emoji-10.png" alt="">
+								<span>배송이 빨라요</span>
+							</button>
+						<button type="button" class="btn-review-keyword on" name="goodsCmntKwd" value="G08" disabled>
+								<img src="/sec/static/_images/emoji/emoji-06.png" alt="">
+								<span>크기가 적당해요</span>
+							</button>
+						<!-- 키워드 더보기 버튼 -->
+						<button type="button" class="btn-show-keywords"><span class="sr-only">리뷰키워드 더보기</span><span>+4</span></button>
+						</div>
+				<div class="help-goods">
+					<input type="hidden" name="goodsEstmNo" value="295864"/>
+					<button type="button" class="btn-goods" name="opnnCheck" data-yescls="login-view-like">도움이 돼요<span name="gc-cnt">7</span></button>
+						</div>
+				<p class="btn-report">
+  					<a href="javascript:;" class="btn-underline" title="상품평 신고하기" onclick="layerMsgPop(this);" data-content="로그인 이후 신고 가능합니다.<br/>로그인 화면으로 이동하시겠습니까?"
+						data-yes="확인" data-yescls="report-login 295864" data-no="취소" data-close="툴팁 닫기" >신고</a>
+					</p>
+			</div>
+			<!-- e : 221221 상품리스트 -->
+
+		</li>
+		<li id="cmntList8">
+			<!-- s : 221221 상품리스트 
+				! 기존 list-div에 advacement 클래스 추가
+				! 부득이 구조변경(태그 이동)됨
+			-->
+			<div class="list-div advancement" id="focus-div-294589">
+				<div class="review-wtInfo">
+					<div class="wtInfo-badge">
+						<!-- 베스트 상품평 뱃지 -->
+						<span class="badge best">베스트</span>
+						<!-- 상품평타입 -->
+						<span class="badge">일반 상품평</span>
+						<!-- 이벤트 상품평 뱃지 -->
+						<span class="badge">이벤트</span>
+						</div>
+					<div class="wtInfo-infogroup">
+						<div class="wtInfo-membership-rank">
+								<div class="member-rank grade-normal"></div>
+									</div>
+						<div class="wtInfo-info">
+							<div class="wtInfo-top">
+								<!-- 작성자 -->
+								<span class="userid">kjg***</span>
+								</div>
+							<div class="wtInfo-bottom">
+								<div class="review-box">
+									<div class="review-starating" role="img" aria-label="별점  5점">
+										<span class="star-yellow">별점</span>
+												<span class="star-yellow" aria-hidden="true">별점</span>
+												<span class="star-yellow" aria-hidden="true">별점</span>
+												<span class="star-yellow" aria-hidden="true">별점</span>
+												<span class="star-yellow" aria-hidden="true">별점</span>
+												</div>
+									<!-- 작성일자 -->
+									<span class="date">2024-01-31</span>
+								</div>
+								<div class="title-box">
+									<!-- 구매처 -->
+									<span class="buyroot">기타 구매</span>
+										<span>갤럭시 S24 Ultra 자급제</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="review-con">
+					<div class="review-util">
+						<button type="button" class="btn-sns-link" data-title="공유" data-content="" data-close="툴팁 닫기">
+								<i class="icon ico-large ico-share2">소셜공유</i>
+							</button>
+							<div class="tooltip-content" style="display:none;">
+								<ol class="share-tooltip-box">
+									<li>
+										<a href="javascript:share('facebook');" class="pd-sns-facebook" title="새 창으로 열림">
+											<img src="/sec/static/_images/common/sns-facebook@3x.png" alt="페이스북 아이콘">
+											<span>페이스북</span>
+										</a>
+									</li>
+									<li>
+										<a href="javascript:void(0);" class="pd-sns-instagram" title="새 창으로 열림">
+											<img src="/sec/static/_images/common/sns_instagram.svg" alt="인스타그램 아이콘">
+											<span>인스타그램</span>
+										</a>
+									</li>
+								</ol>
+							</div>
+						</div>
+					
+					<div class="review-text">
+						<a href="javascript:;" class="txt-slide">
+							<p>
+							부모님께&nbsp;드리는&nbsp;두번째&nbsp;선물로&nbsp;갤럭시&nbsp;S24&nbsp;울트라&nbsp;1TB를&nbsp;구매했어요<br/>우선&nbsp;색상인&nbsp;티타늄&nbsp;그레이&nbsp;너무&nbsp;마음에&nbsp;들어요<br/>크기와&nbsp;재질도&nbsp;마음에&nbsp;들구요<br/>워치&nbsp;작동법&nbsp;보다&nbsp;더욱&nbsp;공부하셔서&nbsp;사용하셔야&nbsp;겠지만&nbsp;<br/>카메라와&nbsp;이번에&nbsp;새로나온&nbsp;기능&nbsp;두가지를&nbsp;너무&nbsp;마음에&nbsp;들어하시네요<br/>#삼성전자이벤트&nbsp;참여</p>
+						</a>
+						<div class="attached-file">
+							<ol>
+								<li>
+											<a href="javascript:;" title="첨부파일1 보기" data-img-seq="0">
+												<img src="//images.samsung.com/kdp/goods_comment/294589/9237f0cf-ca71-4bba-bd0b-da109d3794d8.jpeg?$130_N_PNG$" alt="갤럭시 S24 Ultra 자급제의 첨부파일1">
+													</a>
+										</li>
+									<li>
+											<a href="javascript:;" title="첨부파일2 보기" data-img-seq="1">
+												<img src="//images.samsung.com/kdp/goods_comment/294589/71d3810e-2c3c-4c0f-81bc-0b235c35d68c.jpeg?$130_N_PNG$" alt="갤럭시 S24 Ultra 자급제의 첨부파일2">
+													</a>
+										</li>
+									</ol>
+						</div>
+					</div>
+				</div>
+				<div class="review-lt-keywords">
+					<!-- 키워드  -->
+					<button type="button" class="btn-review-keyword on" name="goodsCmntKwd" value="G01" disabled>
+								<img src="/sec/static/_images/emoji/emoji-01.png" alt="">
+								<span>성능이 좋아요</span>
+							</button>
+						<button type="button" class="btn-review-keyword on" name="goodsCmntKwd" value="G02" disabled>
+								<img src="/sec/static/_images/emoji/emoji-02.png" alt="">
+								<span>사용하기 편리해요</span>
+							</button>
+						<button type="button" class="btn-review-keyword on" name="goodsCmntKwd" value="G03" disabled>
+								<img src="/sec/static/_images/emoji/emoji-04.png" alt="">
+								<span>디자인이 마음에 들어요</span>
+							</button>
+						<button type="button" class="btn-review-keyword on" name="goodsCmntKwd" value="G07" disabled>
+								<img src="/sec/static/_images/emoji/emoji-05.png" alt="">
+								<span>색상이 마음에 들어요</span>
+							</button>
+						<button type="button" class="btn-review-keyword on" name="goodsCmntKwd" value="G09" disabled>
+								<img src="/sec/static/_images/emoji/emoji-07.png" alt="">
+								<span>소재가 마음에 들어요</span>
+							</button>
+						<!-- 키워드 더보기 버튼 -->
+						<button type="button" class="btn-show-keywords"><span class="sr-only">리뷰키워드 더보기</span><span>+4</span></button>
+						</div>
+				<div class="help-goods">
+					<input type="hidden" name="goodsEstmNo" value="294589"/>
+					<button type="button" class="btn-goods" name="opnnCheck" data-yescls="login-view-like">도움이 돼요<span name="gc-cnt">6</span></button>
+						</div>
+				<p class="btn-report">
+  					<a href="javascript:;" class="btn-underline" title="상품평 신고하기" onclick="layerMsgPop(this);" data-content="로그인 이후 신고 가능합니다.<br/>로그인 화면으로 이동하시겠습니까?"
+						data-yes="확인" data-yescls="report-login 294589" data-no="취소" data-close="툴팁 닫기" >신고</a>
+					</p>
+			</div>
+			<!-- e : 221221 상품리스트 -->
+
+		</li>
+		<li id="cmntList9">
+			<!-- s : 221221 상품리스트 
+				! 기존 list-div에 advacement 클래스 추가
+				! 부득이 구조변경(태그 이동)됨
+			-->
+			<div class="list-div advancement" id="focus-div-297261">
+				<div class="review-wtInfo">
+					<div class="wtInfo-badge">
+						<!-- 베스트 상품평 뱃지 -->
+						<span class="badge best">베스트</span>
+						<!-- 상품평타입 -->
+						<span class="badge">일반 상품평</span>
+						<!-- 이벤트 상품평 뱃지 -->
+						<span class="badge">이벤트</span>
+						</div>
+					<div class="wtInfo-infogroup">
+						<div class="wtInfo-membership-rank">
+								<div class="member-rank grade-star"></div>
+									</div>
+						<div class="wtInfo-info">
+							<div class="wtInfo-top">
+								<!-- 작성자 -->
+								<span class="userid">010******23</span>
+								</div>
+							<div class="wtInfo-bottom">
+								<div class="review-box">
+									<div class="review-starating" role="img" aria-label="별점  5점">
+										<span class="star-yellow">별점</span>
+												<span class="star-yellow" aria-hidden="true">별점</span>
+												<span class="star-yellow" aria-hidden="true">별점</span>
+												<span class="star-yellow" aria-hidden="true">별점</span>
+												<span class="star-yellow" aria-hidden="true">별점</span>
+												</div>
+									<!-- 작성일자 -->
+									<span class="date">2024-02-04</span>
+								</div>
+								<div class="title-box">
+									<!-- 구매처 -->
+									<span class="buyroot">기타 구매</span>
+										<span>갤럭시 S24 Ultra 자급제</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="review-con">
+					<div class="review-util">
+						<button type="button" class="btn-sns-link" data-title="공유" data-content="" data-close="툴팁 닫기">
+								<i class="icon ico-large ico-share2">소셜공유</i>
+							</button>
+							<div class="tooltip-content" style="display:none;">
+								<ol class="share-tooltip-box">
+									<li>
+										<a href="javascript:share('facebook');" class="pd-sns-facebook" title="새 창으로 열림">
+											<img src="/sec/static/_images/common/sns-facebook@3x.png" alt="페이스북 아이콘">
+											<span>페이스북</span>
+										</a>
+									</li>
+									<li>
+										<a href="javascript:void(0);" class="pd-sns-instagram" title="새 창으로 열림">
+											<img src="/sec/static/_images/common/sns_instagram.svg" alt="인스타그램 아이콘">
+											<span>인스타그램</span>
+										</a>
+									</li>
+								</ol>
+							</div>
+						</div>
+					
+					<div class="review-text">
+						<a href="javascript:;" class="txt-slide">
+							<p>
+							#삼성전자이벤트참여<br/>8년&nbsp;이상&nbsp;아*폰&nbsp;사용하다가&nbsp;친구의&nbsp;추천으로&nbsp;이번에&nbsp;사전예약&nbsp;기간에&nbsp;신청해서&nbsp;휴대폰&nbsp;사용중입니다.&nbsp;사용한지&nbsp;며칠&nbsp;되지&nbsp;않았는데&nbsp;기능이&nbsp;편리하고&nbsp;다양해서&nbsp;굉장히&nbsp;빠르게&nbsp;익숙해졌고&nbsp;지금은&nbsp;폰트며&nbsp;테마며&nbsp;마음에&nbsp;드는거&nbsp;골라서&nbsp;예쁘게&nbsp;꾸며&nbsp;잘&nbsp;쓰고&nbsp;있어요~&nbsp;무엇보다&nbsp;카메라에&nbsp;굉장한&nbsp;기대가&nbsp;있었는데,&nbsp;정말&nbsp;잘&nbsp;나오네요!&nbsp;야간&nbsp;조명사진&nbsp;찍고&nbsp;몹시&nbsp;감동&nbsp;받았습니다.&nbsp;<br/>다만&nbsp;한가지&nbsp;아쉬웠던&nbsp;것이&nbsp;컬러&nbsp;선택의&nbsp;한계였는데요..&nbsp;ㅎㅎ&nbsp;소재가&nbsp;티타늄이라서&nbsp;그런지는&nbsp;모르겠으나,&nbsp;외형&nbsp;컬러&nbsp;선택에서&nbsp;최소&nbsp;30번&nbsp;이상은&nbsp;고민했던&nbsp;것&nbsp;같아요~&nbsp;젊은&nbsp;세대&nbsp;감성을&nbsp;위해서&nbsp;화이트&nbsp;계열도&nbsp;꼭&nbsp;고려해주시면&nbsp;감사할&nbsp;것&nbsp;같네용&nbsp;^^&nbsp;ㅋㅋㅋ&nbsp;(투명&nbsp;케이스&nbsp;끼우기엔&nbsp;화이트만한게&nbsp;없죠.)<br/>기능&nbsp;면에서는&nbsp;아주&nbsp;만족합니다.&nbsp;<br/>앞으로도&nbsp;쭉&nbsp;갤럭시&nbsp;정착&nbsp;가능할&nbsp;듯&nbsp;합니다.&nbsp;:)&nbsp;삼성&nbsp;앞으로도&nbsp;열일&nbsp;해주세요!&nbsp;^^</p>
+						</a>
+						<div class="attached-file">
+							<ol>
+								<li>
+											<a href="javascript:;" title="첨부파일1 보기" data-img-seq="0">
+												<img src="//images.samsung.com/kdp/goods_comment/297261/0eb1ec02-3e7c-48ab-a97c-dba990caea19.jpg?$130_N_PNG$" alt="갤럭시 S24 Ultra 자급제의 첨부파일1">
+													</a>
+										</li>
+									<li>
+											<a href="javascript:;" title="첨부파일2 보기" data-img-seq="1">
+												<img src="//images.samsung.com/kdp/goods_comment/297261/e9b66c0d-af57-467f-bc94-d6fa1731d6e4.jpg?$130_N_PNG$" alt="갤럭시 S24 Ultra 자급제의 첨부파일2">
+													</a>
+										</li>
+									</ol>
+						</div>
+					</div>
+				</div>
+				<div class="review-lt-keywords">
+					<!-- 키워드  -->
+					<button type="button" class="btn-review-keyword on" name="goodsCmntKwd" value="G01" disabled>
+								<img src="/sec/static/_images/emoji/emoji-01.png" alt="">
+								<span>성능이 좋아요</span>
+							</button>
+						<button type="button" class="btn-review-keyword on" name="goodsCmntKwd" value="G02" disabled>
+								<img src="/sec/static/_images/emoji/emoji-02.png" alt="">
+								<span>사용하기 편리해요</span>
+							</button>
+						<!-- 키워드 더보기 버튼 -->
+						<button type="button" class="btn-show-keywords"><span class="sr-only">리뷰키워드 더보기</span><span>+1</span></button>
+						</div>
+				<div class="help-goods">
+					<input type="hidden" name="goodsEstmNo" value="297261"/>
+					<button type="button" class="btn-goods" name="opnnCheck" data-yescls="login-view-like">도움이 돼요<span name="gc-cnt">5</span></button>
+						</div>
+				<p class="btn-report">
+  					<a href="javascript:;" class="btn-underline" title="상품평 신고하기" onclick="layerMsgPop(this);" data-content="로그인 이후 신고 가능합니다.<br/>로그인 화면으로 이동하시겠습니까?"
+						data-yes="확인" data-yescls="report-login 297261" data-no="취소" data-close="툴팁 닫기" >신고</a>
+					</p>
+			</div>
+			<!-- e : 221221 상품리스트 -->
+
+		</li>
+		<div class="pageingWrap"><div class="paging" id="CommentListPage"><span class="btn_first"><a class="btn_paging first" href="javascript:;" style="cursor: default;" >맨 처음 페이지로 가기</a></span><span class="btn_prev"><a href="javascript:;" style="cursor: default;"  >이전 페이지로 가기</a></span><ul><li class="active"><a href="javascript:;" class="pageClass currentPage" style="cursor: default;">1</a></li><li><a href="javascript:;" data-page="2" class="pageClass">2</a></li><li><a href="javascript:;" data-page="3" class="pageClass">3</a></li><li><a href="javascript:;" data-page="4" class="pageClass">4</a></li><li><a href="javascript:;" data-page="5" class="pageClass">5</a></li></ul><span class="btn_next"><a href="javascript:;" data-page="2">다음 페이지로 가기</a></span><span class="btn_last"><a href="javascript:;" data-page="38">맨 마지막 페이지로 가기</a></span></div><div class="mob-moreViewList more"><button type="button" class="moreView btn-d btn-type1">더보기</button></div></div><div style="display:none;">
+	<button type="button"  id="report-sucess" class="btn-underline" onclick="layerMsgPop(this);" data-content="신고가 완료되었습니다."
+					data-yes="확인" data-yescls="report-sucess" data-close="툴팁 닫기"  ></button>
+</div>

@@ -1,10 +1,5 @@
 import sys
 
-# https://github.com/dialogflow/fulfillment-webhook-json/blob/master/responses/v2/ActionsOnGoogle/RichResponses/SimpleResponse.json
-# https://github.com/dialogflow/fulfillment-webhook-json/blob/master/responses/v2/ActionsOnGoogle/RichResponses/SimpleResponseSsml.json
-# https://github.com/dialogflow/fulfillment-webhook-json/blob/master/responses/v2/ActionsOnGoogle/RichResponses/SimpleResponseSsml.json
-# https://github.com/dialogflow/fulfillment-webhook-json/blob/master/responses/v2/ActionsOnGoogle/RichResponses/SimpleResponseTts.json
-
 cxhr_display_gnb_by_url_json = {
     "list": [
         {
@@ -4493,3 +4488,95 @@ personalization_json = {
     ],
     "isLogin": False
 }
+
+auto_login_success_json = {
+    "view": {
+        "stId": 1,
+        "stGrp": "b2c",
+        "stCd": "b2c",
+        "stGbCd": "10",
+        "stNm": "삼성닷컴",
+        "stTitle": None,
+        "stSht": None,
+        "svcGbCd": "10",
+        "logoImgPath": None,
+        "envmtGbCd": "prd",
+        "stDomain": "https://www.samsung.com",
+        "stB2CDomainPath": None,
+        "stContextPath": "/sec/",
+        "csTelNo": None,
+        "lang": None,
+        "imgPath": None,
+        "imgComPath": None,
+        "noImgPath": None,
+        "mainDispClsfNo": None,
+        "imgDomain": None,
+        "schema": None,
+        "gaKey": None,
+        "kakaoAppKey": None,
+        "adobeStCd": None,
+        "adobeDtm": None,
+        "pageTrack": None,
+        "pageURL": None,
+        "cnctCtfCd": None,
+        "dlgtEmail": None,
+        "displayCategoryList": None,
+        "displayExhibitionList": None,
+        "displaySeriesList": None,
+        "displayGnbList": None,
+        "bnbCtaItem": None,
+        "bnbList": None,
+        "oldDisplayGnbList": None,
+        "gnbNewYn": "",
+        "cartCnt": None,
+        "dispCornNoBest": None,
+        "fndDayRmnAmt": None,
+        "spclRmnAmt": None,
+        "rmnLmtAmt": None,
+        "lmtAmt": None,
+        "mbrBdnAmt": None,
+        "lmtAplStrtDt": None,
+        "lmtAplEndDt": None,
+        "recentYn": None,
+        "recentImgPath": None,
+        "recentGoodsNm": None,
+        "recentGoodsLength": 0,
+        "recentGoodsList": None,
+        "device": None,
+        "privacyPolicyList": None,
+        "secApp": False,
+        "secIos": False,
+        "pfViewYn": "N",
+        "pfViewBgStyle": "white",
+        "titleTag": None,
+        "samid": None,
+        "gtmid": "GTM-NVX3V74",
+        "markAnyExceptionTargetYn": None,
+        "stStdAddInfoVO": None,
+        "bnrTtl": None,
+        "kedCtfUseYn": None,
+        "cnctCtfUseYn": None,
+        "rltnCompNm": None,
+        "saLoginAplYn": None,
+        "membershipAplYn": None,
+        "unpackedPeriodYn": None,
+        "floatingYn": None,
+        "arHidePeriodYn": None,
+        "commentPHidePeriodYn": None,
+        "eppMallStIdYn": None,
+        "nowDate": None,
+        "goodsAdvCmntStYn": None,
+        "loginId": None,
+        "memberName": None,
+        "fnetPresentYn": "N",
+        "myinfoNewYn": "N",
+        "gnbXhrUseYn": None,
+        "popwordHideYn": None,
+        "navigation": None,
+        "cateNavigation": None,
+        "mbrGrdCd": None,
+        "mbrGrdNm": None
+    },
+    "result": "N"
+}
+

@@ -4,7 +4,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.encoders import jsonable_encoder
 from core import schemas
 
-import routers.goods_list as goodsList
+import routers.dummy_goodslist as goodsList
 import routers.dummy as dummy
 
 router = APIRouter(
@@ -26,7 +26,6 @@ async def goods_list(searchFilter: str,
                     secApp: bool,
                     secIos: bool):
     print('/sec/pf/goodsList')
-    #print(req)
     
     response = goodsList.goodslist_json
 
