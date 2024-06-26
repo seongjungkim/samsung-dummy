@@ -50,4 +50,4 @@ gcloud run deploy $APP \
 --allow-unauthenticated
 ```
 
-https://chat-phdovlv6aa-du.a.run.app/main
+https://dummy-phdovlv6aa-du.a.run.app/sec/smartphones/all-smartphones/

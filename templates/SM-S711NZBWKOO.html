@@ -11742,38 +11742,6 @@ function appLaunch(){
         <!-- e : BNB 영역 -->
 	</div>
 
-	<script id="popupMsgTempl" type="text/x-jsrender">
-		<div class="layer-content" tabindex="0">
-			<p>{{content}}</p>
-			{{if yes || no}}
-				<div class="btn-box double">
-					{{if no}}
-						<a href="javascript:void(0);" class="btn btn-d btn-type1 {{:nocls}}">{{:no}}</a>
-					{{/if}}
-					{{if yes}}
-						<a href="javascript:void(0);" class="btn btn-d btn-type2 {{:yescls}}">{{:yes}}</a>
-					{{/if}}
-				</div>
-			{{/if}}
-		</div>
-		{{if close}}
-			<button type="button" class="pop-close">{{:close}}</button>
-		{{/if}}
-	</script>
-	<div class="layer-pop layer-default alert popup-msg"  id="popupMsg" tabindex="0" data-popup-layer="popupMsg" data-focus="popupMsg"></div>
-	<div class="layer-pop layer-normal" id="popupLayer" tabindex="0" data-popup-layer="popupLayer" data-focus="popupLayer"></div>
-	<div class="layer-pop layer-default layer-downCoupon-custom" id="popupCouponLayer" tabindex="0" data-popup-layer="popupCouponLayer" data-focus="popupCouponLayer"></div><script id="tooltipTempl" type="text/x-jsrender">
-	    <p class="tooltip-title">{{:title}}</p>
-	    <div class="tooltip-content">
-			{{content}}
-		</div>
-		{{if close}}
-			<button type="button" class="btn-tooltip-close" id="pd-tooltip-close"><em class="blind">{{:close}}</em></button>
-		{{/if}}
-	</script>
-	<div class="tooltip-layer benefits pd-tooltip" tabindex="0"></div>
-	<div class="tooltip-layer tradein" tabindex="0"><input type="hidden" id="viewStContextPath" value="/sec/"/>
-	
 	<!-- Google Tag Manager -->
 	<script async>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 	new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
