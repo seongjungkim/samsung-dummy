@@ -3,11 +3,13 @@ ENV PYTHONUNBUFFERED True
 
 RUN pip install --upgrade pip
 COPY requirements.txt .
+COPY google4692736c0f1c2826.html .
 RUN pip install --no-cache-dir -r  requirements.txt
 
 ENV APP_HOME /root
 WORKDIR $APP_HOME
 COPY main.py $APP_HOME
+COPY google4692736c0f1c2826.html $APP_HOME
 COPY /core $APP_HOME/core
 COPY /routers $APP_HOME/routers
 COPY /static $APP_HOME/static
