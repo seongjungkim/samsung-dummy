@@ -1,0 +1,100 @@
+<!-- <script src="/sec/static/_script/clipboard.min.js"></script> -->
+<script src="//t1.kakaocdn.net/kakao_js_sdk/v1/kakao.min.js"></script>
+<script src="/sec/static/_script/jsrender.min.js"></script>
+<script src="/sec/static/_script/jquery.form.min.js"></script>
+<!-- <script src="/sec/static/_script/swiper.min.js"></script> -->
+<script type="text/javascript" >
+
+// JS Render Helpers 재 정의
+$.views.helpers({
+	fn_equals : function(A,B){ 
+		return A==B 
+	},
+	fn_lt : function(A,B){
+		return A<B
+	},
+	fn_gt : function(A,B){
+		return A>B
+	},
+	fn_ne : function(A,B){
+		return A!=B
+	},
+	// 값 유무 체크
+	fn_notEmpty : function(A){ 
+		if(typeof A == 'undefined' ){
+			return false;
+		}
+		if( A == null ){
+			return false;
+		}
+		if( A.length < 1 ){
+			return false;
+		}
+		return true;
+	},
+	// 천단위 콤마
+	fn_comma : function(value){
+		var v=(value+'');var reg=/(^[+-]?\d+)(\d{3})/;var n= v.split(",").join("").replace(/^\s*|\s*$/g, '');while(reg.test(n)){n=n.replace(reg, '$1'+','+'$2');}
+		return n;
+	},
+	fn_length : function(obj){
+		if(typeof obj == 'object'){
+			if(Array.isArray(obj)){
+				return obj.length;
+			}else{
+				return Object.keys(compareData).length;
+			}
+		}else{
+			return (obj+'').length;
+		}
+	},
+	fn_first : function (obj){
+		if(Array.isArray(obj)){
+			return obj[0];
+		}else{
+			var keys = Object.keys(compareData);
+			return obj[(keys[0])];
+		}
+	},
+	fn_last : function (obj){
+		if(Array.isArray(obj)){
+			return obj[obj.length-1];
+		}else{
+			var keys = Object.keys(compareData);
+			return obj[(keys[keys.length-1])];
+		}
+	},
+	fn_default : function (val, v){
+		if(typeof val == 'undefined'){
+			return v;
+		}else if(val == null){
+			return v;
+		}else if(val == ''){
+			return v;
+		}
+		return val;
+	}
+});
+
+// JS Render Tag 재 정의
+$.views.tags('script',{   // 스크립트
+	init : function(tagCtx){
+		switch (tagCtx.props.mode) {
+		case 'include':
+			this.template = '<'+'script type="text/javascript" src=""></'+'script>';
+			break;
+		case 'open':
+			this.template = '<'+'script type="text/javascript">';
+			break;
+		case 'close':
+			this.template = '</'+'script>';
+			break;
+		default:
+			this.template = '';
+			break;
+		}
+	}
+});
+
+
+</script>

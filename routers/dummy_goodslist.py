@@ -8823,3 +8823,10 @@ goodslist_more_3_json = {
     "membershipYn": "N",
     "imgChipURL": "https://images.samsung.com/kdp"
 }
+
+
+
+
+
+
+

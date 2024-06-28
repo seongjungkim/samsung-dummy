@@ -5,6 +5,7 @@ from fastapi.encoders import jsonable_encoder
 from core import schemas
 
 import routers.dummy as dummy
+import routers.dummy_goods as dummy_goods
 
 router = APIRouter(
     prefix="/sec/xhr",
@@ -12,7 +13,7 @@ router = APIRouter(
     responses={404: {"description": "Not found"}}
 )
 
-templates = Jinja2Templates(directory="templates/details")
+templates = Jinja2Templates(directory="templates")
 
 #req: schemas.GoodsListRequest = Depends()
 @router.post("/pf/personalization", response_class=JSONResponse)
@@ -54,3 +55,31 @@ async def get_session(request: Request):
     response = "0"
 
     return response
+
+@router.post("/display/getGoods", response_class=HTMLResponse)
+async def get_goods(request: Request):
+    print('/sec/xhr/display/getGoods')
+    
+    pageData = {"request": request}
+
+    response = templates.TemplateResponse("get_goods.html", pageData)
+
+    return response
+
+@router.post("/display/getIncGoodsPfCompare", response_class=HTMLResponse)
+async def get_inc_goods_pf_compare(request: Request):
+    print('/sec/xhr/display/getIncGoodsPfCompare')
+    
+    pageData = {"request": request}
+
+    response = templates.TemplateResponse("get_inc_goods_pf_compare.html", pageData)
+
+    return response
+
+@router.post("/display/componentGoodsCouponPrice", response_class=JSONResponse)
+async def component_goods_coupon_price(request: Request):
+    print('/sec/xhr/display/componentGoodsCouponPrice')
+    
+    response = dummy_goods.component_goods_coupon_price_json
+
+    return JSONResponse(content=jsonable_encoder(response))
