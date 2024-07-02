@@ -44,6 +44,15 @@ async def all_smartphones(request: Request):
     response = templates.TemplateResponse("all-smartphones.html", template_data)
     return response
 
+@router.get("/{category}/", response_class=HTMLResponse)
+async def category(request: Request, category: str):
+    template_data = {
+        "request": request
+    }
+
+    response = templates.TemplateResponse(f"{category}.html", template_data)
+    return response
+
 @router.get("/{model_name}/{model_no}/", response_class=HTMLResponse)
 async def smartphone(request: Request, model_name: str, model_no: str):
     print("model_name:", model_name, "model_no:", model_no)

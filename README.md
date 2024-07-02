@@ -37,6 +37,16 @@ APP=dummy
 TAG=gcr.io/$PROJECT_ID/$APP
 ```
 
+### Cloud Run custom domain (Firebase hosting)
+
+```bash
+PROJECT_ID=tpcg-datacollector
+REGION=asia-northeast1
+APP=samsung.dummy
+TAG=gcr.io/$PROJECT_ID/$APP
+```
+
+
 ```bash
 gcloud builds submit --project=$PROJECT_ID --tag $TAG
 ```
@@ -51,3 +61,7 @@ gcloud run deploy $APP \
 ```
 
 https://dummy-phdovlv6aa-du.a.run.app/sec/smartphones/all-smartphones/
+https://storage.googleapis.com/rubicon-data/www.samsung.com/sec/smartphones/galaxy-s24-ultra-s928/SM-S928NZTNKOO.html
+
+https://tpcg-datacollector.web.app/sec/smartphones/
+https://samsung-dummy-phdovlv6aa-an.a.run.app/sec/smartphones/

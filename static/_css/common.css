@@ -3993,7 +3993,7 @@ _:-ms-fullscreen, :root .layer-pop#fnetPfLayerPopup {transform:translateY(-50.1%
 .layer-benefit-info .layer-content { max-height:calc(100vh - 336px); padding-bottom: 100px; }
 .layer-benefit-info .layer-content .inner{ padding: 0 50px; }
 .layer-benefit-info .layer-content ul.benefit-wrap { display: flex; justify-content: space-between; }
-.layer-benefit-info .layer-content ul.benefit-wrap li { padding: 30px 0; position: relative; font-size: 16px; width: 25%; display: flex; flex-direction: column; align-items: center; background: url("//images.samsung.com/kdp/family/popup/benefit_bg.png") left top no-repeat; background-size: 100% 100%; }
+.layer-benefit-info .layer-content ul.benefit-wrap li { padding: 30px 0; position: relative; font-size: 16px; width: 25%; display: flex; flex-direction: column; align-items: center; background: url("/images/kdp/family/popup/benefit_bg.png") left top no-repeat; background-size: 100% 100%; }
 .layer-benefit-info .layer-content ul.benefit-wrap li > img { display: block; }
 .layer-benefit-info .layer-content ul.benefit-wrap li > span { padding-top: 18px; font-weight: 700; line-height: 18px; text-align: center; }
 .layer-benefit-info .layer-content p.s-tip { margin-top: 24px; font-size: 14px; text-align: left; line-height: 20px; color: #707070;}

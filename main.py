@@ -10,6 +10,7 @@ from routers import auth, apis, views, smartphones, display, goods, xhr, cxhr, p
 app = FastAPI()
 
 app.mount("/sec/static", StaticFiles(directory="static"), name="static")
+app.mount("/images/kdp", StaticFiles(directory="static-kdp"), name="kdp")
 
 app.include_router(auth.router)
 app.include_router(views.router)

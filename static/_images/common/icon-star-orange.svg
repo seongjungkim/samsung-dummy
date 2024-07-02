@@ -1,0 +1,11 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" viewBox="0 0 16 16">
+  <defs>
+    <clipPath id="clip-path">
+      <rect id="사각형_3198" data-name="사각형 3198" width="16" height="16" fill="#ffaa42"/>
+    </clipPath>
+  </defs>
+  <g id="ico_point_20" data-name="ico / point_20" clip-path="url(#clip-path)">
+    <path id="star" d="M486,217.656l2.472,4.891,5.528.784-4,3.806.944,5.375L486,229.975l-4.944,2.539.944-5.375-4-3.806,5.527-.784Z" transform="translate(-478 -217.085)" fill="#ffaa42"/>
+  </g>
+</svg>

@@ -1,0 +1,17 @@
+
+<svg id="star_20" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="20" height="20" viewBox="0 0 20 20">
+  <defs>
+    <clipPath id="clip-path">
+      <rect id="사각형_3198" data-name="사각형 3198" width="20" height="20" fill="#d9d9d9"/>
+    </clipPath>
+    <clipPath id="clip-path-2">
+      <rect id="사각형_4176" data-name="사각형 4176" width="10" height="20" fill="#d9d9d9"/>
+    </clipPath>
+  </defs>
+  <g id="마스크_그룹_230" data-name="마스크 그룹 230" clip-path="url(#clip-path)">
+    <path id="star" d="M488,217.656l3.09,6.114,6.91.98-5,4.758,1.18,6.719L488,233.054l-6.18,3.173,1.18-6.719-5-4.758,6.909-.98Z" transform="translate(-478 -216.942)" fill="#d9d9d9"/>
+    <g id="마스크_그룹_416" data-name="마스크 그룹 416" clip-path="url(#clip-path-2)">
+      <path id="star-2" data-name="star" d="M488,217.656l3.09,6.114,6.91.98-5,4.758,1.18,6.719L488,233.054l-6.18,3.173,1.18-6.719-5-4.758,6.909-.98Z" transform="translate(-478 -216.941)" fill="#ffaa4e"/>
+    </g>
+  </g>
+</svg>

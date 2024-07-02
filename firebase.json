@@ -1,0 +1,11 @@
+  {
+    "hosting": {
+      "rewrites": [{
+        "source": "**",
+        "run": {
+          "serviceId": "dummy",
+          "region": "asia-northeast3"
+        }
+      }]
+    }
+  }

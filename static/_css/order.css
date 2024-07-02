@@ -3389,7 +3389,7 @@ body[data-pagename="fnet"] .order-area .order-tbl ul.info-ul.sub.nonestockGoodsE
 .fee-info-popup.active {display:block;}
 .fee-info-popup .scp_component {position: relative; height: 100%; background-color: #fff; border-radius: 20px;}
 .fee-info-popup .scp_component > h3 {text-align: center;}
-.fee-info-popup .pop-close {display: block; position:relative; left: 50%; transform:translateX(-50%); z-index: 300; background: #fff url("//images.samsung.com/kdp/static/mkt/Samsung-Care-Plus/Care-Service-3-5year/icon-close.svg") no-repeat center center; object-fit: cover;}
+.fee-info-popup .pop-close {display: block; position:relative; left: 50%; transform:translateX(-50%); z-index: 300; background: #fff url("/images/kdp/static/mkt/Samsung-Care-Plus/Care-Service-3-5year/icon-close.svg") no-repeat center center; object-fit: cover;}
 
 /* 탭 */
 .fee-info-popup .scp_component .scp-tab-wrap .scp-tab {display: flex;}
@@ -8425,7 +8425,7 @@ body[data-pagename="fnet"] .order-area .order-tbl ul.info-ul.sub.nonestockGoodsE
 .fee-info-popup.active {display:block;}
 .fee-info-popup .scp_component {position: relative; height: 100%; background-color: #fff; border-radius: 20px;}
 .fee-info-popup .scp_component > h3 {text-align: center;}
-.fee-info-popup .pop-close {display: block; position:relative; left: 50%; transform:translateX(-50%); z-index: 300; background: #fff url("//images.samsung.com/kdp/static/mkt/Samsung-Care-Plus/Care-Service-3-5year/icon-close.svg") no-repeat center center; object-fit: cover;}
+.fee-info-popup .pop-close {display: block; position:relative; left: 50%; transform:translateX(-50%); z-index: 300; background: #fff url("/images/kdp/static/mkt/Samsung-Care-Plus/Care-Service-3-5year/icon-close.svg") no-repeat center center; object-fit: cover;}
 
 /* 탭 */
 .fee-info-popup .scp_component .scp-tab-wrap .scp-tab {display: flex;}

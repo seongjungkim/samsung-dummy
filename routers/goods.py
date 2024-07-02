@@ -5,6 +5,9 @@ from fastapi.encoders import jsonable_encoder
 from core import schemas
 
 import routers.dummy as dummy
+import routers.dummy_commentlist as dummy_commentlist
+import routers.dummy_cpcalculate as dummy_cpcalculate
+import routers.dummy_benefitinfo as dummy_benefitinfo
 
 router = APIRouter(
     prefix="/sec/xhr/goods",
@@ -37,7 +40,7 @@ async def get_first_recent_goods(request: Request):
     print('/sec/xhr/goods/getFirstRecentGoods')
     #print(req)
     
-    response = "{\"stContextPath\":\"/sec/\",\"recentGoodsNm\":\"갤럭시 S24 Ultra 자급제\",\"recentYn\":\"Y\",\"recentImgPath\":\"//images.samsung.com/kdp/goods/2023/12/27/1b274202-3256-415d-9ddb-e3a40e7c94d2.png\",\"recentGoodsLength\":1}"
+    response = "{\"stContextPath\":\"/sec/\",\"recentGoodsNm\":\"갤럭시 S24 Ultra 자급제\",\"recentYn\":\"Y\",\"recentImgPath\":\"/images/kdp/goods/2023/12/27/1b274202-3256-415d-9ddb-e3a40e7c94d2.png\",\"recentGoodsLength\":1}"
 
     return response
 
@@ -105,6 +108,135 @@ async def goods_spec(request: Request):
     #    response = templates.TemplateResponse("specs/SM-S928NZTNKOO.html", pageData)
 
     return response
+
+@router.post("/getGoodsPaymentBenefitInfo", response_class=JSONResponse)
+async def get_goods_payment_benefit_info(request: Request):
+    print('/sec/xhr/goods/getGoodsPaymentBenefitInfo')
+
+    form_data = await request.form()
+    print(form_data)
+    goods_id = form_data.get("goodsId")
+    
+    pageData = {"request": request}
+
+    if goods_id == 'G000380038':
+        response = dummy_benefitinfo.G000380020_json
+    elif goods_id == 'G000380048':
+        response = dummy_benefitinfo.G000380020_json
+    elif goods_id == 'G000380020':
+        response = dummy_benefitinfo.G000380020_json
+    elif goods_id == 'G000380027':
+        response = dummy_benefitinfo.G000380020_json
+    elif goods_id == 'G000380013':
+        response = dummy_benefitinfo.G000380020_json
+    elif goods_id == 'G000380067':
+        response = dummy_benefitinfo.G000380020_json
+    elif goods_id == 'G000380059':
+        response = dummy_benefitinfo.G000380020_json
+    elif goods_id == 'G000380051':
+        response = dummy_benefitinfo.G000380020_json
+    elif goods_id == 'G000326308':
+        response = dummy_benefitinfo.G000380020_json
+    elif goods_id == 'G000326310':
+        response = dummy_benefitinfo.G000380020_json
+    elif goods_id == 'G000381004':
+        response = dummy_benefitinfo.G000380020_json
+    elif goods_id == 'G000290075':
+        response = dummy_benefitinfo.G000380020_json
+    elif goods_id == 'G000290062':
+        response = dummy_benefitinfo.G000380020_json
+    elif goods_id == 'G000290056':
+        response = dummy_benefitinfo.G000380020_json
+    #else:
+    #    response = dummy_benefitinfo.G000380020_json
+
+    return JSONResponse(content=jsonable_encoder(response))
+
+@router.post("/getGoodsCpCalculate", response_class=JSONResponse)
+async def get_goods_cp_calculate(request: Request):
+    print('/sec/xhr/goods/getGoodsCpCalculate')
+
+    form_data = await request.form()
+    print(form_data)
+    goods_id = form_data.get("goodsId")
+    
+    pageData = {"request": request}
+
+    if goods_id == 'G000380038':
+        response = dummy_cpcalculate.G000380020_json
+    elif goods_id == 'G000380048':
+        response = dummy_cpcalculate.G000380020_json
+    elif goods_id == 'G000380020':
+        response = dummy_cpcalculate.G000380020_json
+    elif goods_id == 'G000380027':
+        response = dummy_cpcalculate.G000380020_json
+    elif goods_id == 'G000380013':
+        response = dummy_cpcalculate.G000380020_json
+    elif goods_id == 'G000380067':
+        response = dummy_cpcalculate.G000380020_json
+    elif goods_id == 'G000380059':
+        response = dummy_cpcalculate.G000380020_json
+    elif goods_id == 'G000380051':
+        response = dummy_cpcalculate.G000380020_json
+    elif goods_id == 'G000326308':
+        response = dummy_cpcalculate.G000380020_json
+    elif goods_id == 'G000326310':
+        response = dummy_cpcalculate.G000380020_json
+    elif goods_id == 'G000381004':
+        response = dummy_cpcalculate.G000380020_json
+    elif goods_id == 'G000290075':
+        response = dummy_cpcalculate.G000380020_json
+    elif goods_id == 'G000290062':
+        response = dummy_cpcalculate.G000380020_json
+    elif goods_id == 'G000290056':
+        response = dummy_cpcalculate.G000380020_json
+    #else:
+    #    response = dummy_cpcalculate.G000380020_json
+
+    return JSONResponse(content=jsonable_encoder(response))
+
+@router.post("/selectBestGoodsAdvancedCommentList", response_class=JSONResponse)
+async def select_best_goods_advanced_comment_list(request: Request):
+    print('/sec/xhr/goods/selectBestGoodsAdvancedCommentList')
+
+    form_data = await request.form()
+    print(form_data)
+    goods_id = form_data.get("goodsId")
+    
+    pageData = {"request": request}
+
+    if goods_id == 'G000380038':
+        response = dummy_commentlist.G000380020_json
+    elif goods_id == 'G000380048':
+        response = dummy_commentlist.G000380020_json
+    elif goods_id == 'G000380020':
+        response = dummy_commentlist.G000380020_json
+    elif goods_id == 'G000380027':
+        response = dummy_commentlist.G000380020_json
+    elif goods_id == 'G000380013':
+        response = dummy_commentlist.G000380020_json
+    elif goods_id == 'G000380067':
+        response = dummy_commentlist.G000380020_json
+    elif goods_id == 'G000380059':
+        response = dummy_commentlist.G000380020_json
+    elif goods_id == 'G000380051':
+        response = dummy_commentlist.G000380020_json
+    elif goods_id == 'G000326308':
+        response = dummy_commentlist.G000380020_json
+    elif goods_id == 'G000326310':
+        response = dummy_commentlist.G000380020_json
+    elif goods_id == 'G000381004':
+        response = dummy_commentlist.G000380020_json
+    elif goods_id == 'G000290075':
+        response = dummy_commentlist.G000380020_json
+    elif goods_id == 'G000290062':
+        response = dummy_commentlist.G000380020_json
+    elif goods_id == 'G000290056':
+        response = dummy_commentlist.G000380020_json
+    #else:
+    #    response = dummy_commentlist.G000380020_json
+
+    return JSONResponse(content=jsonable_encoder(response))
 
 @router.post("/getGoodsSpecList", response_class=HTMLResponse)
 async def get_goods_spec_list(request: Request):
