@@ -26,6 +26,22 @@ async def smartphones(request: Request):
     response = templates.TemplateResponse("smartphones.html", template_data)
     return response
 
+@router.get("/sitemap.xml")
+async def verify(request: Request):
+    pageData = {"request": request}
+
+    response = templates.TemplateResponse("sitemap.xml", pageData)
+
+    return response
+
+@router.get("/pages-sitemap.xml")
+async def verify(request: Request):
+    pageData = {"request": request}
+
+    response = templates.TemplateResponse("pages-sitemap.xml", pageData)
+
+    return response
+
 @router.get("/", response_class=HTMLResponse)
 async def all_smartphones(request: Request):
     template_data = {

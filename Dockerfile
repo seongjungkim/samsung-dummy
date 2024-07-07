@@ -12,6 +12,7 @@ COPY /core $APP_HOME/core
 COPY /routers $APP_HOME/routers
 COPY /static $APP_HOME/static
 COPY /static-kdp $APP_HOME/static-kdp
+COPY /static-samsung $APP_HOME/static-samsung
 COPY /templates $APP_HOME/templates
 COPY /utils $APP_HOME/utils
 

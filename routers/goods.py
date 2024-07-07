@@ -92,6 +92,8 @@ async def goods_spec(request: Request):
         response = templates.TemplateResponse("specs/SM-S926NZVAKOD.html", pageData)
     elif goods_id == 'G000380051':
         response = templates.TemplateResponse("specs/SM-S921NZYEKOD.html", pageData)
+    elif goods_id == 'G000380006':
+        response = templates.TemplateResponse("specs/SM-S921NZYFKOO.html", pageData)
     elif goods_id == 'G000326308':
         response = templates.TemplateResponse("specs/SM-S711NZPWKOO.html", pageData)
     elif goods_id == 'G000326310':
@@ -134,6 +136,8 @@ async def get_goods_payment_benefit_info(request: Request):
     elif goods_id == 'G000380059':
         response = dummy_benefitinfo.G000380020_json
     elif goods_id == 'G000380051':
+        response = dummy_benefitinfo.G000380020_json
+    elif goods_id == 'G000380006':
         response = dummy_benefitinfo.G000380020_json
     elif goods_id == 'G000326308':
         response = dummy_benefitinfo.G000380020_json
@@ -178,6 +182,8 @@ async def get_goods_cp_calculate(request: Request):
         response = dummy_cpcalculate.G000380020_json
     elif goods_id == 'G000380051':
         response = dummy_cpcalculate.G000380020_json
+    elif goods_id == 'G000380006':
+        response = dummy_cpcalculate.G000380020_json
     elif goods_id == 'G000326308':
         response = dummy_cpcalculate.G000380020_json
     elif goods_id == 'G000326310':
@@ -220,6 +226,8 @@ async def select_best_goods_advanced_comment_list(request: Request):
     elif goods_id == 'G000380059':
         response = dummy_commentlist.G000380020_json
     elif goods_id == 'G000380051':
+        response = dummy_commentlist.G000380020_json
+    elif goods_id == 'G000380006':
         response = dummy_commentlist.G000380020_json
     elif goods_id == 'G000326308':
         response = dummy_commentlist.G000380020_json
@@ -265,6 +273,8 @@ async def get_goods_spec_list(request: Request):
         response = templates.TemplateResponse("speclist/SM-S926NZVAKOD.html", pageData)
     elif goods_id == 'G000380051':
         response = templates.TemplateResponse("speclist/SM-S921NZYEKOD.html", pageData)
+    elif goods_id == 'G000380006':
+        response = templates.TemplateResponse("speclist/SM-S921NZYFKOO.html", pageData)
     elif goods_id == 'G000326308':
         response = templates.TemplateResponse("speclist/SM-S711NZPWKOO.html", pageData)
     elif goods_id == 'G000326310':
@@ -309,6 +319,8 @@ async def goods_manual(request: Request):
         response = templates.TemplateResponse("manuals/SM-S926NZVAKOD.html", pageData)
     elif goods_id == 'G000380051':
         response = templates.TemplateResponse("manuals/SM-S921NZYEKOD.html", pageData)
+    elif goods_id == 'G000380006':
+        response = templates.TemplateResponse("manuals/SM-S921NZYFKOO.html", pageData)
     elif goods_id == 'G000326308':
         response = templates.TemplateResponse("manuals/SM-S711NZPWKOO.html", pageData)
     elif goods_id == 'G000326310':
@@ -375,6 +387,8 @@ async def goods_detail(request: Request):
         response = templates.TemplateResponse("details/SM-S926NZVAKOD.html", pageData)
     elif goods_id == 'G000380051':
         response = templates.TemplateResponse("details/SM-S921NZYEKOD.html", pageData)
+    elif goods_id == 'G000380006':
+        response = templates.TemplateResponse("details/SM-S921NZYFKOO.html", pageData)
     elif goods_id == 'G000326308':
         response = templates.TemplateResponse("details/SM-S711NZPWKOO.html", pageData)
     elif goods_id == 'G000326310':

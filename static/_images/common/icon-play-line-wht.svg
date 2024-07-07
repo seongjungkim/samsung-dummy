@@ -1,0 +1,35 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="118" height="118" viewBox="0 0 118 118">
+  <defs>
+    <filter id="Ellipse_116" x="0" y="0" width="118" height="118" filterUnits="userSpaceOnUse">
+      <feOffset input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feFlood flood-opacity="0.2"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <filter id="Polygon_1" x="35" y="23" width="60" height="72" filterUnits="userSpaceOnUse">
+      <feOffset input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="5" result="blur-2"/>
+      <feFlood flood-opacity="0.2"/>
+      <feComposite operator="in" in2="blur-2"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="Play_Button" data-name="Play Button" transform="translate(15 15)">
+    <g id="Group_4946" data-name="Group 4946">
+      <g transform="matrix(1, 0, 0, 1, -15, -15)" filter="url(#Ellipse_116)">
+        <g id="Ellipse_116-2" data-name="Ellipse 116" transform="translate(15 15)" fill="none" stroke="#fff" stroke-width="2">
+          <circle cx="44" cy="44" r="44" stroke="none"/>
+          <circle cx="44" cy="44" r="43" fill="none"/>
+        </g>
+      </g>
+      <g transform="matrix(1, 0, 0, 1, -15, -15)" filter="url(#Polygon_1)">
+        <g id="Polygon_1-2" data-name="Polygon 1" transform="translate(80 38) rotate(90)" fill="none">
+          <path d="M19.362,2.341a2,2,0,0,1,3.277,0L39.8,26.853A2,2,0,0,1,38.159,30H3.841A2,2,0,0,1,2.2,26.853Z" stroke="none"/>
+          <path d="M 20.99999046325684 3.487583160400391 L 21 3.487583160400391 L 3.841320037841797 27.99999237060547 C 3.841323852539063 27.99999618530273 3.841323852539063 28 3.84130859375 28.00000381469727 L 38.15867233276367 28.00000381469727 C 38.15867614746094 27.99999618530273 38.1586799621582 27.99999046325684 38.15869140625 27.9999942779541 L 20.99999046325684 3.487583160400391 M 21 1.487583160400391 C 21.62018013000488 1.487583160400391 22.24036026000977 1.771944046020508 22.63846015930176 2.340663909912109 L 39.79714965820313 26.85307312011719 C 40.72504043579102 28.17863464355469 39.77672958374023 30.00000381469727 38.15869140625 30.00000381469727 L 3.84130859375 30.00000381469727 C 2.223270416259766 30.00000381469727 1.274959564208984 28.17863464355469 2.202850341796875 26.85307312011719 L 19.36153984069824 2.340663909912109 C 19.75963973999023 1.771944046020508 20.37981986999512 1.487583160400391 21 1.487583160400391 Z" stroke="none" fill="#fff"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

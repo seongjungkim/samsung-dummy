@@ -42,7 +42,7 @@ TAG=gcr.io/$PROJECT_ID/$APP
 ```bash
 PROJECT_ID=tpcg-datacollector
 REGION=asia-northeast1
-APP=samsung.dummy
+APP=samsung-dummy
 TAG=gcr.io/$PROJECT_ID/$APP
 ```
 
